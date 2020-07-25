@@ -46,9 +46,48 @@ fn main() -> GameResult {
 }
 
 fn initialize_level(world: &mut World) {
-    components::create_player(world, Position { x: 0, y: 0, z: 0 });
-    components::create_box(world, Position { x: 1, y: 0, z: 0 });
-    components::create_box_spot(world, Position { x: 2, y: 0, z: 0 });
-    components::create_floor(world, Position { x: 3, y: 0, z: 0 });
-    components::create_wall(world, Position { x: 4, y: 0, z: 0 });
+    for i in 0..18 {
+        for j in 0..5 {
+            components::create_player(
+                world,
+                Position {
+                    x: 0 + j * 5,
+                    y: i,
+                    z: 0,
+                },
+            );
+            components::create_box(
+                world,
+                Position {
+                    x: 1 + j * 5,
+                    y: i,
+                    z: 0,
+                },
+            );
+            components::create_box_spot(
+                world,
+                Position {
+                    x: 2 + j * 5,
+                    y: i,
+                    z: 0,
+                },
+            );
+            components::create_floor(
+                world,
+                Position {
+                    x: 3 + j * 5,
+                    y: i,
+                    z: 0,
+                },
+            );
+            components::create_wall(
+                world,
+                Position {
+                    x: 4 + j * 5,
+                    y: i,
+                    z: 0,
+                },
+            );
+        }
+    }
 }
