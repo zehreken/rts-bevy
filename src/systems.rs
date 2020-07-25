@@ -3,8 +3,11 @@ use ggez::graphics;
 use ggez::graphics::DrawParam;
 use ggez::nalgebra as na;
 use ggez::Context;
+use graphics::spritebatch::SpriteBatch;
+use itertools::Itertools;
 use specs::join::Join;
 use specs::{ReadStorage, System};
+use std::collections::HashMap;
 
 pub struct RenderingSystem<'a> {
     pub context: &'a mut Context,
@@ -42,14 +45,38 @@ impl<'a> System<'a> for RenderingSystem<'a> {
                 .expect("Error while comparing 'z'")
         });
 
+        let mut rendering_batches: HashMap<u8, HashMap<String, Vec<DrawParam>>> = HashMap::new();
+
         for (position, renderable) in rendering_data.iter() {
-            let image = graphics::Image::new(self.context, renderable.path.clone())
-                .expect("Error while creating image");
+            let image_path = renderable.path.clone();
             let x = position.x as f32 * super::TILE_WIDTH;
             let y = position.y as f32 * super::TILE_HEIGHT;
+            let z = position.z;
 
             let draw_params = DrawParam::new().dest(na::Point2::new(x, y));
-            graphics::draw(self.context, &image, draw_params).expect("Error while drawing");
+            rendering_batches
+                .entry(z)
+                .or_default()
+                .entry(image_path)
+                .or_default()
+                .push(draw_params);
+        }
+
+        for (_z, group) in rendering_batches
+            .iter()
+            .sorted_by(|a, b| Ord::cmp(&a.0, &b.0))
+        {
+            for (image_path, draw_params) in group {
+                let image = graphics::Image::new(self.context, image_path).expect("expected image");
+                let mut sprite_batch = SpriteBatch::new(image);
+
+                for draw_param in draw_params.iter() {
+                    sprite_batch.add(*draw_param);
+                }
+
+                graphics::draw(self.context, &sprite_batch, graphics::DrawParam::new())
+                    .expect("expected render");
+            }
         }
 
         let fps = format!("FPS: {}", ggez::timer::fps(self.context));
