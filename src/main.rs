@@ -7,12 +7,14 @@ use systems::*;
 
 mod components;
 mod systems;
+mod texture_atlas;
 
 pub const TILE_WIDTH: f32 = 32.0;
 pub const TILE_HEIGHT: f32 = 32.0;
 
 struct Game {
     world: World,
+    texture_atlas: texture_atlas::TextureAtlas,
 }
 
 impl event::EventHandler for Game {
@@ -36,7 +38,10 @@ impl event::EventHandler for Game {
 
     fn draw(&mut self, context: &mut Context) -> GameResult {
         {
-            let mut rs = RenderingSystem { context };
+            let mut rs = RenderingSystem {
+                context,
+                texture_atlas: &mut self.texture_atlas,
+            };
             rs.run_now(&self.world);
         }
 
@@ -55,7 +60,13 @@ fn main() -> GameResult {
         .add_resource_path(path::PathBuf::from("./resources"));
 
     let (context, event_loop) = &mut context_builder.build()?;
-    let game = &mut Game { world };
+
+    let texture_atlas =
+        texture_atlas::TextureAtlas::new(context, "/images/colored_tilemap_packed.png".to_string());
+    let game = &mut Game {
+        world,
+        texture_atlas,
+    };
 
     event::run(context, event_loop, game)
 }

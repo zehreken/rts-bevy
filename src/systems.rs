@@ -1,4 +1,5 @@
 use super::components::*;
+use super::texture_atlas::TextureAtlas;
 use ggez::graphics;
 use ggez::graphics::{DrawParam, Rect};
 use ggez::nalgebra as na;
@@ -11,6 +12,7 @@ use std::collections::HashMap;
 
 pub struct RenderingSystem<'a> {
     pub context: &'a mut Context,
+    pub texture_atlas: &'a mut TextureAtlas,
 }
 
 impl RenderingSystem<'_> {
@@ -53,7 +55,7 @@ impl<'a> System<'a> for RenderingSystem<'a> {
             let y = position.y as f32 * super::TILE_HEIGHT;
             let z = position.z;
 
-            let rect = Rect::new(0.0, 0.0, 0.5, 0.5);
+            let rect = Rect::new(0.0, 0.0, 0.0714, 0.1);
             let draw_params = DrawParam::new().src(rect).dest(na::Point2::new(x, y));
             rendering_batches
                 .entry(z)
@@ -68,17 +70,21 @@ impl<'a> System<'a> for RenderingSystem<'a> {
             .sorted_by(|a, b| Ord::cmp(&a.0, &b.0))
         {
             for (image_path, draw_params) in group {
-                let image = graphics::Image::new(self.context, image_path).expect("expected image");
-                let mut sprite_batch = SpriteBatch::new(image);
+                // let image = graphics::Image::new(self.context, image_path).expect("expected image");
+                // // let mut sprite_batch = SpriteBatch::new(image);
+                let sprite_batch = &mut self.texture_atlas.spritebatch;
 
                 for draw_param in draw_params.iter() {
                     sprite_batch.add(*draw_param);
                 }
 
-                graphics::draw(self.context, &sprite_batch, graphics::DrawParam::new())
+                graphics::draw(self.context, sprite_batch, graphics::DrawParam::new())
                     .expect("expected render");
             }
         }
+
+        // Don't forget to clear the batch, without this performance will go down!
+        self.texture_atlas.spritebatch.clear();
 
         let fps = format!("FPS: {}", ggez::timer::fps(self.context));
         self.draw_text(&fps, 0.0, 500.0);
