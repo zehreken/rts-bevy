@@ -1,6 +1,6 @@
 use super::components::*;
 use ggez::graphics;
-use ggez::graphics::DrawParam;
+use ggez::graphics::{DrawParam, Rect};
 use ggez::nalgebra as na;
 use ggez::Context;
 use graphics::spritebatch::SpriteBatch;
@@ -53,7 +53,8 @@ impl<'a> System<'a> for RenderingSystem<'a> {
             let y = position.y as f32 * super::TILE_HEIGHT;
             let z = position.z;
 
-            let draw_params = DrawParam::new().dest(na::Point2::new(x, y));
+            let rect = Rect::new(0.0, 0.0, 0.5, 0.5);
+            let draw_params = DrawParam::new().src(rect).dest(na::Point2::new(x, y));
             rendering_batches
                 .entry(z)
                 .or_default()

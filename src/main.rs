@@ -1,4 +1,5 @@
 use components::*;
+use ggez::event::{KeyCode, KeyMods};
 use ggez::{conf, event, Context, GameResult};
 use specs::{RunNow, World, WorldExt};
 use std::path;
@@ -15,6 +16,20 @@ struct Game {
 }
 
 impl event::EventHandler for Game {
+    fn key_down_event(
+        &mut self,
+        ctx: &mut Context,
+        keycode: KeyCode,
+        _keymods: KeyMods,
+        _repeat: bool,
+    ) {
+        // println!("key pressed: {:?}", keycode);
+        match keycode {
+            KeyCode::Escape => ggez::event::quit(ctx),
+            _ => (),
+        }
+    }
+
     fn update(&mut self, _context: &mut Context) -> GameResult {
         Ok(())
     }
