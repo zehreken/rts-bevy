@@ -1,7 +1,10 @@
 use ggez::graphics::spritebatch::SpriteBatch;
-use ggez::graphics::FilterMode;
 use ggez::graphics::Image;
+use ggez::graphics::{FilterMode, Rect};
 use ggez::Context;
+
+const ROW_COUNT: u8 = 10;
+const COLUMN_COUNT: u8 = 14;
 
 pub struct TextureAtlas {
     pub spritebatch: SpriteBatch,
@@ -17,4 +20,13 @@ impl TextureAtlas {
     }
 }
 
-fn get_image() {}
+pub fn get_image_rect(id: u8) -> Rect {
+    let row = id / COLUMN_COUNT;
+    let column = id % COLUMN_COUNT;
+    if id == 36 {
+        println!("{}, {}", row, column);
+    }
+    let rect = Rect::new(column as f32 * 0.0714, row as f32 * 0.1, 0.0714, 0.1);
+
+    rect
+}

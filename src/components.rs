@@ -11,7 +11,7 @@ pub struct Position {
 #[derive(Component)]
 #[storage(VecStorage)]
 pub struct Renderable {
-    pub name: String,
+    pub id: u8,
 }
 
 #[derive(Component)]
@@ -43,9 +43,7 @@ pub fn create_wall(world: &mut World, position: Position) {
     world
         .create_entity()
         .with(Position { z: 10, ..position })
-        .with(Renderable {
-            name: "/images/wall.png".to_string(),
-        })
+        .with(Renderable { id: 1 })
         .with(Wall {})
         .build();
 }
@@ -54,9 +52,7 @@ pub fn create_floor(world: &mut World, position: Position) {
     world
         .create_entity()
         .with(Position { z: 5, ..position })
-        .with(Renderable {
-            name: "/images/floor.png".to_string(),
-        })
+        .with(Renderable { id: 15 })
         .build();
 }
 
@@ -64,21 +60,8 @@ pub fn create_box(world: &mut World, position: Position) {
     world
         .create_entity()
         .with(Position { z: 10, ..position })
-        .with(Renderable {
-            name: "/images/box.png".to_string(),
-        })
+        .with(Renderable { id: 51 })
         .with(Box {})
-        .build();
-}
-
-pub fn create_box_spot(world: &mut World, position: Position) {
-    world
-        .create_entity()
-        .with(Position { z: 9, ..position })
-        .with(Renderable {
-            name: "/images/box_spot.png".to_string(),
-        })
-        .with(BoxSpot {})
         .build();
 }
 
@@ -86,9 +69,7 @@ pub fn create_player(world: &mut World, position: Position) {
     world
         .create_entity()
         .with(Position { z: 10, ..position })
-        .with(Renderable {
-            name: "/images/player.png".to_string(),
-        })
+        .with(Renderable { id: 4 })
         .with(Player {})
         .build();
 }

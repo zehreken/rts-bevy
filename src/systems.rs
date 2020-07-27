@@ -4,7 +4,6 @@ use ggez::graphics;
 use ggez::graphics::{DrawParam, Rect};
 use ggez::nalgebra as na;
 use ggez::Context;
-use graphics::spritebatch::SpriteBatch;
 use itertools::Itertools;
 use specs::join::Join;
 use specs::{ReadStorage, System};
@@ -50,13 +49,13 @@ impl<'a> System<'a> for RenderingSystem<'a> {
         let mut rendering_batches: HashMap<u8, HashMap<String, Vec<DrawParam>>> = HashMap::new();
 
         for (position, renderable) in rendering_data.iter() {
-            let image_path = renderable.name.clone();
+            let image_path = "N/A".to_string();
             let x = position.x as f32 * super::TILE_WIDTH;
             let y = position.y as f32 * super::TILE_HEIGHT;
             let z = position.z;
 
             let scale = 2.0;
-            let rect = Rect::new(0.0714 * 5.0, 0.0, 0.0714, 0.1);
+            let rect = super::texture_atlas::get_image_rect(renderable.id);
             let draw_params = DrawParam::new()
                 .src(rect)
                 .dest(na::Point2::new(x * scale, y * scale))

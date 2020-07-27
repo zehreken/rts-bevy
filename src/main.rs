@@ -87,38 +87,30 @@ fn initialize_level(world: &mut World) {
                     z: 0,
                 },
             );
-            // components::create_box(
-            //     world,
-            //     Position {
-            //         x: 1 + j * 5,
-            //         y: i,
-            //         z: 0,
-            //     },
-            // );
-            // components::create_box_spot(
-            //     world,
-            //     Position {
-            //         x: 2 + j * 5,
-            //         y: i,
-            //         z: 0,
-            //     },
-            // );
-            // components::create_floor(
-            //     world,
-            //     Position {
-            //         x: 3 + j * 5,
-            //         y: i,
-            //         z: 0,
-            //     },
-            // );
-            // components::create_wall(
-            //     world,
-            //     Position {
-            //         x: 4 + j * 5,
-            //         y: i,
-            //         z: 0,
-            //     },
-            // );
+            components::create_box(
+                world,
+                Position {
+                    x: 1 + j * 5,
+                    y: i,
+                    z: 0,
+                },
+            );
+            components::create_floor(
+                world,
+                Position {
+                    x: 3 + j * 5,
+                    y: i,
+                    z: 0,
+                },
+            );
+            components::create_wall(
+                world,
+                Position {
+                    x: 4 + j * 5,
+                    y: i,
+                    z: 0,
+                },
+            );
         }
     }
 }
