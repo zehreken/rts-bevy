@@ -9,8 +9,8 @@ mod components;
 mod systems;
 mod texture_atlas;
 
-pub const TILE_WIDTH: f32 = 32.0;
-pub const TILE_HEIGHT: f32 = 32.0;
+pub const TILE_WIDTH: f32 = 8.0;
+pub const TILE_HEIGHT: f32 = 8.0;
 
 struct Game {
     world: World,
@@ -58,9 +58,14 @@ fn main() -> GameResult {
         .window_setup(conf::WindowSetup::default().title("rts"))
         .window_mode(conf::WindowMode::default().dimensions(800.0, 600.0))
         .add_resource_path(path::PathBuf::from("./resources"));
-
     let (context, event_loop) = &mut context_builder.build()?;
 
+    // with this you can set scale
+    ggez::graphics::set_screen_coordinates(
+        context,
+        ggez::graphics::Rect::new(0.0, 0.0, 800.0 * 1.0, 600.0 * 1.0),
+    )
+    .unwrap();
     let texture_atlas =
         texture_atlas::TextureAtlas::new(context, "/images/colored_tilemap_packed.png".to_string());
     let game = &mut Game {
@@ -72,7 +77,7 @@ fn main() -> GameResult {
 }
 
 fn initialize_level(world: &mut World) {
-    for i in 0..18 {
+    for i in 0..10 {
         for j in 0..5 {
             components::create_player(
                 world,
@@ -82,38 +87,38 @@ fn initialize_level(world: &mut World) {
                     z: 0,
                 },
             );
-            components::create_box(
-                world,
-                Position {
-                    x: 1 + j * 5,
-                    y: i,
-                    z: 0,
-                },
-            );
-            components::create_box_spot(
-                world,
-                Position {
-                    x: 2 + j * 5,
-                    y: i,
-                    z: 0,
-                },
-            );
-            components::create_floor(
-                world,
-                Position {
-                    x: 3 + j * 5,
-                    y: i,
-                    z: 0,
-                },
-            );
-            components::create_wall(
-                world,
-                Position {
-                    x: 4 + j * 5,
-                    y: i,
-                    z: 0,
-                },
-            );
+            // components::create_box(
+            //     world,
+            //     Position {
+            //         x: 1 + j * 5,
+            //         y: i,
+            //         z: 0,
+            //     },
+            // );
+            // components::create_box_spot(
+            //     world,
+            //     Position {
+            //         x: 2 + j * 5,
+            //         y: i,
+            //         z: 0,
+            //     },
+            // );
+            // components::create_floor(
+            //     world,
+            //     Position {
+            //         x: 3 + j * 5,
+            //         y: i,
+            //         z: 0,
+            //     },
+            // );
+            // components::create_wall(
+            //     world,
+            //     Position {
+            //         x: 4 + j * 5,
+            //         y: i,
+            //         z: 0,
+            //     },
+            // );
         }
     }
 }
