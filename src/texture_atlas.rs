@@ -16,7 +16,7 @@ impl TextureAtlas {
         let mode = FilterMode::Nearest; // This keeps the pixels perfect
         image.set_filter(mode);
         let spritebatch = SpriteBatch::new(image);
-        TextureAtlas { spritebatch }
+        Self { spritebatch }
     }
 }
 

@@ -60,7 +60,7 @@ pub fn create_box(world: &mut World, position: Position) {
     world
         .create_entity()
         .with(Position { z: 10, ..position })
-        .with(Renderable { id: 51 })
+        .with(Renderable { id: 105 })
         .with(Box {})
         .build();
 }

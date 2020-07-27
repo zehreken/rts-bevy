@@ -8,6 +8,7 @@ use systems::*;
 mod components;
 mod systems;
 mod texture_atlas;
+mod map;
 
 pub const TILE_WIDTH: f32 = 8.0;
 pub const TILE_HEIGHT: f32 = 8.0;
@@ -77,12 +78,12 @@ fn main() -> GameResult {
 }
 
 fn initialize_level(world: &mut World) {
-    for i in 0..10 {
-        for j in 0..5 {
+    for i in 0..100 {
+        for j in 0..25 {
             components::create_player(
                 world,
                 Position {
-                    x: 0 + j * 5,
+                    x: 0 + j * 4,
                     y: i,
                     z: 0,
                 },
@@ -90,7 +91,7 @@ fn initialize_level(world: &mut World) {
             components::create_box(
                 world,
                 Position {
-                    x: 1 + j * 5,
+                    x: 1 + j * 4,
                     y: i,
                     z: 0,
                 },
@@ -98,7 +99,7 @@ fn initialize_level(world: &mut World) {
             components::create_floor(
                 world,
                 Position {
-                    x: 3 + j * 5,
+                    x: 2 + j * 4,
                     y: i,
                     z: 0,
                 },
@@ -106,7 +107,7 @@ fn initialize_level(world: &mut World) {
             components::create_wall(
                 world,
                 Position {
-                    x: 4 + j * 5,
+                    x: 3 + j * 4,
                     y: i,
                     z: 0,
                 },
