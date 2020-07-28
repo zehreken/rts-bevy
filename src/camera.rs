@@ -7,7 +7,7 @@ pub struct Camera {
 impl Camera {
     pub fn new(width: f32, height: f32) -> Self {
         Self {
-            position: Vector2::new(width / 2.0, height / 2.0),
+            position: Vector2::new(0.0, 0.0),
         }
     }
 

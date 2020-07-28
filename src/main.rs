@@ -4,6 +4,7 @@ use ggez::{conf, event, Context, GameResult};
 use specs::{RunNow, World, WorldExt};
 use std::path;
 use systems::*;
+use ggez::nalgebra as na;
 
 mod camera;
 mod components;
@@ -29,19 +30,23 @@ impl event::EventHandler for Game {
         _repeat: bool,
     ) {
         // println!("key pressed: {:?}", keycode);
+        let mut delta = na::Vector2::new(0.0, 0.0);
         match keycode {
             KeyCode::Escape => ggez::event::quit(ctx),
+            KeyCode::W => delta.y -= 1.0,
+            KeyCode::A => delta.x -= 1.0,
+            KeyCode::S => delta.y += 1.0,
+            KeyCode::D => delta.x += 1.0,
             _ => (),
         }
-    }
-
-    fn update(&mut self, ctx: &mut Context) -> GameResult {
-        let duration = ggez::timer::time_since_start(ctx);
 
         self.camera.translate(
             ctx,
-            ggez::nalgebra::Vector2::new(ggez::timer::delta(ctx).as_secs_f32() * 50.0, 0.0),
+            na::Vector2::new(delta.x, delta.y),
         );
+    }
+
+    fn update(&mut self, ctx: &mut Context) -> GameResult {
         Ok(())
     }
 
