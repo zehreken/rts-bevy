@@ -54,14 +54,14 @@ impl<'a> System<'a> for RenderingSystem<'a> {
             let y = position.y as f32 * super::TILE_HEIGHT;
             let z = position.z;
 
-            let scale = 1.0;
+            let scale = 4.0;
             let rect = super::texture_atlas::get_image_rect(renderable.id);
             let draw_params = DrawParam::new()
                 .src(rect)
                 .dest(na::Point2::new(x * scale, y * scale))
                 .scale(na::Vector2::new(scale, scale));
             rendering_batches
-                .entry(z)
+                .entry(z as u8)
                 .or_default()
                 .entry(image_path)
                 .or_default()

@@ -3,9 +3,9 @@ use specs::{Builder, Component, VecStorage, World, WorldExt};
 #[derive(Debug, Component, Clone, Copy)]
 #[storage(VecStorage)]
 pub struct Position {
-    pub x: u8,
-    pub y: u8,
-    pub z: u8,
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
 }
 
 #[derive(Component)]
@@ -42,7 +42,10 @@ pub fn register_components(world: &mut World) {
 pub fn create_wall(world: &mut World, position: Position) {
     world
         .create_entity()
-        .with(Position { z: 10, ..position })
+        .with(Position {
+            z: 10.0,
+            ..position
+        })
         .with(Renderable { id: 1 })
         .with(Wall {})
         .build();
@@ -51,7 +54,7 @@ pub fn create_wall(world: &mut World, position: Position) {
 pub fn create_floor(world: &mut World, position: Position) {
     world
         .create_entity()
-        .with(Position { z: 5, ..position })
+        .with(Position { z: 5.0, ..position })
         .with(Renderable { id: 15 })
         .build();
 }
@@ -59,7 +62,10 @@ pub fn create_floor(world: &mut World, position: Position) {
 pub fn create_box(world: &mut World, position: Position) {
     world
         .create_entity()
-        .with(Position { z: 10, ..position })
+        .with(Position {
+            z: 10.0,
+            ..position
+        })
         .with(Renderable { id: 105 })
         .with(Box {})
         .build();
@@ -68,7 +74,10 @@ pub fn create_box(world: &mut World, position: Position) {
 pub fn create_player(world: &mut World, position: Position) {
     world
         .create_entity()
-        .with(Position { z: 10, ..position })
+        .with(Position {
+            z: 10.0,
+            ..position
+        })
         .with(Renderable { id: 4 })
         .with(Player {})
         .build();

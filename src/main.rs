@@ -5,16 +5,18 @@ use specs::{RunNow, World, WorldExt};
 use std::path;
 use systems::*;
 
+mod camera;
 mod components;
+mod map;
 mod systems;
 mod texture_atlas;
-mod map;
 
 pub const TILE_WIDTH: f32 = 8.0;
 pub const TILE_HEIGHT: f32 = 8.0;
 
 struct Game {
     world: World,
+    camera: camera::Camera,
     texture_atlas: texture_atlas::TextureAtlas,
 }
 
@@ -33,7 +35,13 @@ impl event::EventHandler for Game {
         }
     }
 
-    fn update(&mut self, _context: &mut Context) -> GameResult {
+    fn update(&mut self, ctx: &mut Context) -> GameResult {
+        let duration = ggez::timer::time_since_start(ctx);
+
+        self.camera.translate(
+            ctx,
+            ggez::nalgebra::Vector2::new(ggez::timer::delta(ctx).as_secs_f32() * 50.0, 0.0),
+        );
         Ok(())
     }
 
@@ -59,7 +67,7 @@ fn main() -> GameResult {
         .window_setup(conf::WindowSetup::default().title("rts"))
         .window_mode(conf::WindowMode::default().dimensions(800.0, 600.0))
         .add_resource_path(path::PathBuf::from("./resources"));
-    let (context, event_loop) = &mut context_builder.build()?;
+    let (context, events_loop) = &mut context_builder.build()?;
 
     // with this you can set scale
     ggez::graphics::set_screen_coordinates(
@@ -67,14 +75,17 @@ fn main() -> GameResult {
         ggez::graphics::Rect::new(0.0, 0.0, 800.0 * 1.0, 600.0 * 1.0),
     )
     .unwrap();
+    let camera = camera::Camera::new(800.0, 800.0);
+
     let texture_atlas =
         texture_atlas::TextureAtlas::new(context, "/images/colored_tilemap_packed.png".to_string());
     let game = &mut Game {
         world,
+        camera,
         texture_atlas,
     };
 
-    event::run(context, event_loop, game)
+    event::run(context, events_loop, game)
 }
 
 fn initialize_level(world: &mut World) {
@@ -83,33 +94,33 @@ fn initialize_level(world: &mut World) {
             components::create_player(
                 world,
                 Position {
-                    x: 0 + j * 4,
-                    y: i,
-                    z: 0,
+                    x: 0.0 + j as f32 * 4.0,
+                    y: i as f32,
+                    z: 0.0,
                 },
             );
             components::create_box(
                 world,
                 Position {
-                    x: 1 + j * 4,
-                    y: i,
-                    z: 0,
+                    x: 1.0 + j as f32 * 4.0,
+                    y: i as f32,
+                    z: 0.0,
                 },
             );
             components::create_floor(
                 world,
                 Position {
-                    x: 2 + j * 4,
-                    y: i,
-                    z: 0,
+                    x: 2.0 + j as f32 * 4.0,
+                    y: i as f32,
+                    z: 0.0,
                 },
             );
             components::create_wall(
                 world,
                 Position {
-                    x: 3 + j * 4,
-                    y: i,
-                    z: 0,
+                    x: 3.0 + j as f32 * 4.0,
+                    y: i as f32,
+                    z: 0.0,
                 },
             );
         }
