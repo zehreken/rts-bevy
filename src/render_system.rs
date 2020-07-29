@@ -33,10 +33,14 @@ impl RenderSystem<'_> {
 }
 
 impl<'a> System<'a> for RenderSystem<'a> {
-    type SystemData = (ReadStorage<'a, Position>, ReadStorage<'a, Renderable>);
+    type SystemData = (ReadStorage<'a, Position>, ReadStorage<'a, Renderable>, ReadStorage<'a, Camera>);
     fn run(&mut self, data: Self::SystemData) {
-        let (positions, renderables) = data;
+        let (positions, renderables, cameras) = data;
 
+        let mut camera: Camera = Camera::default();
+        for c in cameras.join() {
+            camera = *c;
+        }
         graphics::clear(self.context, graphics::Color::new(1.0, 0.0, 0.22, 1.0));
 
         let mut rendering_data = (&positions, &renderables).join().collect::<Vec<_>>();
@@ -50,8 +54,8 @@ impl<'a> System<'a> for RenderSystem<'a> {
 
         for (position, renderable) in rendering_data.iter() {
             let image_path = "N/A".to_string();
-            let x = position.x as f32 * super::TILE_WIDTH;
-            let y = position.y as f32 * super::TILE_HEIGHT;
+            let x = position.x as f32 * super::TILE_WIDTH + camera.x;
+            let y = position.y as f32 * super::TILE_HEIGHT + camera.y;
             let z = position.z;
 
             let scale = 4.0;

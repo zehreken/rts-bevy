@@ -8,8 +8,8 @@ pub struct CameraSystem<'a> {
 }
 
 impl<'a> System<'a> for CameraSystem<'a> {
-    type SystemData = (ReadStorage<'a, Camera>, ReadStorage<'a, Position>);
+    type SystemData = (ReadStorage<'a, Camera>);
     fn run(&mut self, data: Self::SystemData) {
-        let (camera, position) = data;
+        let cameras = data;
     }
 }

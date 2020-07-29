@@ -12,6 +12,7 @@ mod input_system;
 mod map;
 mod render_system;
 mod texture_atlas;
+mod transform_system;
 
 pub const TILE_WIDTH: f32 = 8.0;
 pub const TILE_HEIGHT: f32 = 8.0;
@@ -39,13 +40,13 @@ impl event::EventHandler for Game {
     }
 
     fn update(&mut self, ctx: &mut Context) -> GameResult {
+        let mut input_system = input_system::InputSystem {};
+        input_system.run_now(&self.world);
         Ok(())
     }
 
     fn draw(&mut self, context: &mut Context) -> GameResult {
         {
-            let mut input_system = input_system::InputSystem {};
-            input_system.run_now(&self.world);
             let mut render_system = RenderSystem {
                 context,
                 texture_atlas: &mut self.texture_atlas,
@@ -90,8 +91,8 @@ fn initialize_level(world: &mut World) {
     components::create_camera(
         world,
         Position {
-            x: 400.0,
-            y: 300.0,
+            x: 0.0,
+            y: 0.0,
             z: 0.0,
         },
     );

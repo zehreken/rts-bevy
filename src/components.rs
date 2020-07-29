@@ -9,7 +9,7 @@ pub struct Position {
     pub z: f32,
 }
 
-#[derive(Component)]
+#[derive(Component, Debug)]
 #[storage(VecStorage)]
 pub struct Renderable {
     pub id: u8,
@@ -31,9 +31,13 @@ pub struct Box {}
 #[storage(VecStorage)]
 pub struct BoxSpot {}
 
-#[derive(Component)]
+#[derive(Component, Debug, Default, Clone, Copy)]
 #[storage(VecStorage)]
-pub struct Camera {}
+pub struct Camera {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+}
 
 #[derive(Default)]
 pub struct InputQueue {
@@ -57,12 +61,11 @@ pub fn register_components(world: &mut World) {
 pub fn create_camera(world: &mut World, position: Position) {
     world
         .create_entity()
-        .with(Position {
+        .with(Camera {
             x: position.x,
             y: position.y,
             z: position.z,
         })
-        .with(Camera {})
         .build();
 }
 
