@@ -1,3 +1,4 @@
+use ggez::event::KeyCode;
 use specs::{Builder, Component, VecStorage, World, WorldExt};
 
 #[derive(Debug, Component, Clone, Copy)]
@@ -33,6 +34,15 @@ pub struct BoxSpot {}
 #[derive(Component)]
 #[storage(VecStorage)]
 pub struct Camera {}
+
+#[derive(Default)]
+pub struct InputQueue {
+    pub keys_pressed: Vec<KeyCode>,
+}
+
+pub fn register_resources(world: &mut World) {
+    world.insert(InputQueue::default());
+}
 
 pub fn register_components(world: &mut World) {
     world.register::<Camera>();

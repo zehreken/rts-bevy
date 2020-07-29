@@ -8,6 +8,7 @@ use systems::*;
 
 mod camera_system;
 mod components;
+mod input_system;
 mod map;
 mod systems;
 mod texture_atlas;
@@ -28,18 +29,13 @@ impl event::EventHandler for Game {
         _keymods: KeyMods,
         _repeat: bool,
     ) {
-        // println!("key pressed: {:?}", keycode);
-        let mut delta = na::Vector2::new(0.0, 0.0);
         match keycode {
             KeyCode::Escape => ggez::event::quit(ctx),
-            KeyCode::W => delta.y -= 1.0,
-            KeyCode::A => delta.x -= 1.0,
-            KeyCode::S => delta.y += 1.0,
-            KeyCode::D => delta.x += 1.0,
             _ => (),
         }
 
-        // move camera with the delta above
+        let mut input_queue = self.world.write_resource::<InputQueue>();
+        input_queue.keys_pressed.push(keycode);
     }
 
     fn update(&mut self, ctx: &mut Context) -> GameResult {
@@ -48,6 +44,8 @@ impl event::EventHandler for Game {
 
     fn draw(&mut self, context: &mut Context) -> GameResult {
         {
+            let mut input_system = input_system::InputSystem {};
+            input_system.run_now(&self.world);
             let mut rendering_system = RenderingSystem {
                 context,
                 texture_atlas: &mut self.texture_atlas,
@@ -61,6 +59,7 @@ impl event::EventHandler for Game {
 
 fn main() -> GameResult {
     let mut world = World::new();
+    components::register_resources(&mut world);
     components::register_components(&mut world);
     initialize_level(&mut world);
 
