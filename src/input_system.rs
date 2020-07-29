@@ -27,6 +27,7 @@ impl<'a> System<'a> for InputSystem {
                     _ => (),
                 }
             }
+            println!("camera position: {:?}", position);
         }
     }
 }

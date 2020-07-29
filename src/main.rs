@@ -2,15 +2,15 @@ use components::*;
 use ggez::event::{KeyCode, KeyMods};
 use ggez::nalgebra as na;
 use ggez::{conf, event, Context, GameResult};
+use render_system::*;
 use specs::{RunNow, World, WorldExt};
 use std::path;
-use systems::*;
 
 mod camera_system;
 mod components;
 mod input_system;
 mod map;
-mod systems;
+mod render_system;
 mod texture_atlas;
 
 pub const TILE_WIDTH: f32 = 8.0;
@@ -46,11 +46,11 @@ impl event::EventHandler for Game {
         {
             let mut input_system = input_system::InputSystem {};
             input_system.run_now(&self.world);
-            let mut rendering_system = RenderingSystem {
+            let mut render_system = RenderSystem {
                 context,
                 texture_atlas: &mut self.texture_atlas,
             };
-            rendering_system.run_now(&self.world);
+            render_system.run_now(&self.world);
         }
 
         Ok(())

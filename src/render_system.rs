@@ -9,12 +9,12 @@ use specs::join::Join;
 use specs::{ReadStorage, System};
 use std::collections::HashMap;
 
-pub struct RenderingSystem<'a> {
+pub struct RenderSystem<'a> {
     pub context: &'a mut Context,
     pub texture_atlas: &'a mut TextureAtlas,
 }
 
-impl RenderingSystem<'_> {
+impl RenderSystem<'_> {
     pub fn draw_text(&mut self, text_string: &str, x: f32, y: f32) {
         let text = graphics::Text::new(text_string);
         let destination = na::Point2::new(x, y);
@@ -32,7 +32,7 @@ impl RenderingSystem<'_> {
     }
 }
 
-impl<'a> System<'a> for RenderingSystem<'a> {
+impl<'a> System<'a> for RenderSystem<'a> {
     type SystemData = (ReadStorage<'a, Position>, ReadStorage<'a, Renderable>);
     fn run(&mut self, data: Self::SystemData) {
         let (positions, renderables) = data;
