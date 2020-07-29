@@ -30,13 +30,30 @@ pub struct Box {}
 #[storage(VecStorage)]
 pub struct BoxSpot {}
 
+#[derive(Component)]
+#[storage(VecStorage)]
+pub struct Camera {}
+
 pub fn register_components(world: &mut World) {
+    world.register::<Camera>();
     world.register::<Position>();
     world.register::<Renderable>();
     world.register::<Wall>();
     world.register::<Player>();
     world.register::<Box>();
     world.register::<BoxSpot>();
+}
+
+pub fn create_camera(world: &mut World, position: Position) {
+    world
+        .create_entity()
+        .with(Position {
+            x: position.x,
+            y: position.y,
+            z: position.z,
+        })
+        .with(Camera {})
+        .build();
 }
 
 pub fn create_wall(world: &mut World, position: Position) {

@@ -1,12 +1,12 @@
 use components::*;
 use ggez::event::{KeyCode, KeyMods};
+use ggez::nalgebra as na;
 use ggez::{conf, event, Context, GameResult};
 use specs::{RunNow, World, WorldExt};
 use std::path;
 use systems::*;
-use ggez::nalgebra as na;
 
-mod camera;
+mod camera_system;
 mod components;
 mod map;
 mod systems;
@@ -17,7 +17,6 @@ pub const TILE_HEIGHT: f32 = 8.0;
 
 struct Game {
     world: World,
-    camera: camera::Camera,
     texture_atlas: texture_atlas::TextureAtlas,
 }
 
@@ -40,10 +39,7 @@ impl event::EventHandler for Game {
             _ => (),
         }
 
-        self.camera.translate(
-            ctx,
-            na::Vector2::new(delta.x, delta.y),
-        );
+        // move camera with the delta above
     }
 
     fn update(&mut self, ctx: &mut Context) -> GameResult {
@@ -52,11 +48,11 @@ impl event::EventHandler for Game {
 
     fn draw(&mut self, context: &mut Context) -> GameResult {
         {
-            let mut rs = RenderingSystem {
+            let mut rendering_system = RenderingSystem {
                 context,
                 texture_atlas: &mut self.texture_atlas,
             };
-            rs.run_now(&self.world);
+            rendering_system.run_now(&self.world);
         }
 
         Ok(())
@@ -80,13 +76,11 @@ fn main() -> GameResult {
         ggez::graphics::Rect::new(0.0, 0.0, 800.0 * 1.0, 600.0 * 1.0),
     )
     .unwrap();
-    let camera = camera::Camera::new(800.0, 800.0);
 
     let texture_atlas =
         texture_atlas::TextureAtlas::new(context, "/images/colored_tilemap_packed.png".to_string());
     let game = &mut Game {
         world,
-        camera,
         texture_atlas,
     };
 
@@ -94,6 +88,14 @@ fn main() -> GameResult {
 }
 
 fn initialize_level(world: &mut World) {
+    components::create_camera(
+        world,
+        Position {
+            x: 400.0,
+            y: 300.0,
+            z: 0.0,
+        },
+    );
     for i in 0..100 {
         for j in 0..25 {
             components::create_player(
