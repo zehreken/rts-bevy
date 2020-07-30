@@ -1,6 +1,5 @@
 use components::*;
-use ggez::event::{KeyCode, KeyMods};
-use ggez::nalgebra as na;
+use ggez::event::{KeyCode, KeyMods, MouseButton};
 use ggez::{conf, event, Context, GameResult};
 use render_system::*;
 use specs::{RunNow, World, WorldExt};
@@ -20,6 +19,9 @@ pub const TILE_HEIGHT: f32 = 8.0;
 struct Game {
     world: World,
     texture_atlas: texture_atlas::TextureAtlas,
+    mouse_x: f32,
+    mouse_y: f32,
+    is_mouse_button_down: bool,
 }
 
 impl event::EventHandler for Game {
@@ -39,16 +41,38 @@ impl event::EventHandler for Game {
         input_queue.keys_pressed.push(keycode);
     }
 
-    fn update(&mut self, ctx: &mut Context) -> GameResult {
+    fn mouse_button_down_event(
+        &mut self,
+        _ctx: &mut Context,
+        button: MouseButton,
+        _x: f32,
+        _y: f32,
+    ) {
+        if button == MouseButton::Left {
+            self.is_mouse_button_down = true;
+        }
+    }
+
+    fn mouse_button_up_event(&mut self, _ctx: &mut Context, button: MouseButton, _x: f32, _y: f32) {
+        if button == MouseButton::Left {
+            self.is_mouse_button_down = false;
+        }
+    }
+
+    fn mouse_motion_event(&mut self, _ctx: &mut Context, _x: f32, _y: f32, _dx: f32, _dy: f32) {
+        println!("{:?}", (_x, _y, _dx, _dy));
+    }
+
+    fn update(&mut self, _ctx: &mut Context) -> GameResult {
         let mut input_system = input_system::InputSystem {};
         input_system.run_now(&self.world);
         Ok(())
     }
 
-    fn draw(&mut self, context: &mut Context) -> GameResult {
+    fn draw(&mut self, ctx: &mut Context) -> GameResult {
         {
             let mut render_system = RenderSystem {
-                context,
+                context: ctx,
                 texture_atlas: &mut self.texture_atlas,
             };
             render_system.run_now(&self.world);
@@ -82,6 +106,9 @@ fn main() -> GameResult {
     let game = &mut Game {
         world,
         texture_atlas,
+        mouse_x: 0.0,
+        mouse_y: 0.0,
+        is_mouse_button_down: false,
     };
 
     event::run(context, events_loop, game)

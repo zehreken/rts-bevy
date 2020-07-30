@@ -1,7 +1,7 @@
 use super::components::*;
 use super::texture_atlas::TextureAtlas;
 use ggez::graphics;
-use ggez::graphics::{DrawParam, Rect};
+use ggez::graphics::{DrawMode, DrawParam, Rect};
 use ggez::nalgebra as na;
 use ggez::Context;
 use itertools::Itertools;
@@ -33,7 +33,11 @@ impl RenderSystem<'_> {
 }
 
 impl<'a> System<'a> for RenderSystem<'a> {
-    type SystemData = (ReadStorage<'a, Position>, ReadStorage<'a, Renderable>, ReadStorage<'a, Camera>);
+    type SystemData = (
+        ReadStorage<'a, Position>,
+        ReadStorage<'a, Renderable>,
+        ReadStorage<'a, Camera>,
+    );
     fn run(&mut self, data: Self::SystemData) {
         let (positions, renderables, cameras) = data;
 
@@ -95,6 +99,16 @@ impl<'a> System<'a> for RenderSystem<'a> {
 
         let fps = format!("FPS: {}", ggez::timer::fps(self.context));
         self.draw_text(&fps, 0.0, 500.0);
+
+        let mesh = graphics::Mesh::new_rectangle(
+            self.context,
+            DrawMode::Stroke(graphics::StrokeOptions::default()),
+            Rect::new(0.0, 0.0, 100.0, 40.0),
+            graphics::WHITE,
+        )
+        .unwrap();
+
+        graphics::draw(self.context, &mesh, DrawParam::default()).unwrap();
 
         graphics::present(self.context).expect("Error while presenting");
     }
