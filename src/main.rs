@@ -1,5 +1,7 @@
 use components::*;
 use ggez::event::{KeyCode, KeyMods, MouseButton};
+use ggez::graphics;
+use ggez::graphics::{DrawMode, DrawParam, Rect};
 use ggez::{conf, event, Context, GameResult};
 use render_system::*;
 use specs::{RunNow, World, WorldExt};
@@ -16,15 +18,17 @@ mod transform_system;
 pub const TILE_WIDTH: f32 = 8.0;
 pub const TILE_HEIGHT: f32 = 8.0;
 
-struct Game {
+struct MainState {
     world: World,
     texture_atlas: texture_atlas::TextureAtlas,
+    mouse_init_x: f32,
+    mouse_init_y: f32,
     mouse_x: f32,
     mouse_y: f32,
     is_mouse_button_down: bool,
 }
 
-impl event::EventHandler for Game {
+impl event::EventHandler for MainState {
     fn key_down_event(
         &mut self,
         ctx: &mut Context,
@@ -41,14 +45,10 @@ impl event::EventHandler for Game {
         input_queue.keys_pressed.push(keycode);
     }
 
-    fn mouse_button_down_event(
-        &mut self,
-        _ctx: &mut Context,
-        button: MouseButton,
-        _x: f32,
-        _y: f32,
-    ) {
+    fn mouse_button_down_event(&mut self, _ctx: &mut Context, button: MouseButton, x: f32, y: f32) {
         if button == MouseButton::Left {
+            self.mouse_init_x = x;
+            self.mouse_init_y = y;
             self.is_mouse_button_down = true;
         }
     }
@@ -59,8 +59,9 @@ impl event::EventHandler for Game {
         }
     }
 
-    fn mouse_motion_event(&mut self, _ctx: &mut Context, _x: f32, _y: f32, _dx: f32, _dy: f32) {
-        println!("{:?}", (_x, _y, _dx, _dy));
+    fn mouse_motion_event(&mut self, _ctx: &mut Context, x: f32, y: f32, _dx: f32, _dy: f32) {
+        self.mouse_x = x + 1.0;
+        self.mouse_y = y + 1.0;
     }
 
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
@@ -77,6 +78,50 @@ impl event::EventHandler for Game {
             };
             render_system.run_now(&self.world);
         }
+
+        if self.is_mouse_button_down {
+            let mesh = graphics::Mesh::new_rectangle(
+                ctx,
+                DrawMode::Stroke(graphics::StrokeOptions::default()),
+                Rect::new(
+                    self.mouse_init_x,
+                    self.mouse_init_y,
+                    self.mouse_x - self.mouse_init_x,
+                    self.mouse_y - self.mouse_init_y,
+                ),
+                graphics::WHITE,
+            )
+            .unwrap();
+
+            use ggez::mint::Point2;
+            let p1 = Point2 {
+                x: self.mouse_init_x,
+                y: self.mouse_init_y,
+            };
+            let p2 = Point2 {
+                x: self.mouse_x,
+                y: self.mouse_init_y,
+            };
+            let p3 = Point2 {
+                x: self.mouse_x,
+                y: self.mouse_y,
+            };
+            let p4 = Point2 {
+                x: self.mouse_init_x,
+                y: self.mouse_y,
+            };
+            let mesh = graphics::Mesh::new_polyline(
+                ctx,
+                DrawMode::Stroke(graphics::StrokeOptions::default()),
+                &[p1, p2, p3, p4, p1],
+                graphics::WHITE,
+            )
+            .unwrap();
+
+            graphics::draw(ctx, &mesh, DrawParam::default()).unwrap();
+        }
+
+        graphics::present(ctx).expect("Error while presenting");
 
         Ok(())
     }
@@ -103,11 +148,13 @@ fn main() -> GameResult {
 
     let texture_atlas =
         texture_atlas::TextureAtlas::new(context, "/images/colored_tilemap_packed.png".to_string());
-    let game = &mut Game {
+    let game = &mut MainState {
         world,
         texture_atlas,
-        mouse_x: 0.0,
-        mouse_y: 0.0,
+        mouse_init_x: 0.0,
+        mouse_init_y: 0.0,
+        mouse_x: 1.0,
+        mouse_y: 1.0,
         is_mouse_button_down: false,
     };
 
