@@ -11,6 +11,7 @@ mod camera_system;
 mod components;
 mod input_system;
 mod map;
+mod move_system;
 mod render_system;
 mod selection_system;
 mod texture_atlas;
@@ -54,7 +55,7 @@ impl event::EventHandler for MainState {
         }
     }
 
-    fn mouse_button_up_event(&mut self, _ctx: &mut Context, button: MouseButton, _x: f32, _y: f32) {
+    fn mouse_button_up_event(&mut self, _ctx: &mut Context, button: MouseButton, x: f32, y: f32) {
         if button == MouseButton::Left {
             self.is_mouse_button_down = false;
             let mut input_queue = self.world.write_resource::<InputQueue>();
@@ -70,6 +71,10 @@ impl event::EventHandler for MainState {
                 },
             ));
         }
+        if button == MouseButton::Right {
+            let mut input_queue = self.world.write_resource::<InputQueue>();
+            input_queue.move_commands.push(ggez::mint::Point2 { x, y });
+        }
     }
 
     fn mouse_motion_event(&mut self, _ctx: &mut Context, x: f32, y: f32, _dx: f32, _dy: f32) {
@@ -83,6 +88,9 @@ impl event::EventHandler for MainState {
 
         let mut selection_system = selection_system::SelectionSystem {};
         selection_system.run_now(&self.world);
+
+        let mut move_system = move_system::MoveSystem {};
+        move_system.run_now(&self.world);
 
         self.world.maintain();
         Ok(())

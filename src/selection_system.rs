@@ -18,6 +18,7 @@ impl<'a> System<'a> for SelectionSystem {
         if let Some(command) = input_queue.selection_command {
             println!("{:?}", command);
             for (position, selectable) in (&positions, &mut selectables).join() {
+                // if selectable is inside the selection
                 selectable.is_selected = true;
             }
             input_queue.selection_command = None;

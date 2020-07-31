@@ -43,6 +43,7 @@ pub struct Selectable {
 pub struct InputQueue {
     pub keys_pressed: Vec<KeyCode>,
     pub selection_command: Option<(Point2<f32>, Point2<f32>)>,
+    pub move_commands: Vec<Point2<f32>>,
 }
 
 pub fn register_resources(world: &mut World) {
@@ -120,5 +121,6 @@ pub fn create_actor(world: &mut World, position: Position) {
         })
         .with(Renderable { id: 4 })
         .with(Actor {})
+        .with(Selectable { is_selected: false })
         .build();
 }
