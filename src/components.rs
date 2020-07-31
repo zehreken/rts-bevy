@@ -35,7 +35,9 @@ pub struct Camera {
 
 #[derive(Component)]
 #[storage(VecStorage)]
-pub struct Selected {}
+pub struct Selectable {
+    pub is_selected: bool,
+}
 
 #[derive(Default)]
 pub struct InputQueue {
@@ -53,6 +55,7 @@ pub fn register_components(world: &mut World) {
     world.register::<Renderable>();
     world.register::<Wall>();
     world.register::<Actor>();
+    world.register::<Selectable>();
 }
 
 pub fn create_camera(world: &mut World, position: Position) {
