@@ -12,6 +12,7 @@ mod components;
 mod input_system;
 mod map;
 mod render_system;
+mod selection_system;
 mod texture_atlas;
 mod transform_system;
 
@@ -56,6 +57,18 @@ impl event::EventHandler for MainState {
     fn mouse_button_up_event(&mut self, _ctx: &mut Context, button: MouseButton, _x: f32, _y: f32) {
         if button == MouseButton::Left {
             self.is_mouse_button_down = false;
+            let mut input_queue = self.world.write_resource::<InputQueue>();
+            use ggez::mint::Point2;
+            input_queue.selection_command = Some((
+                Point2 {
+                    x: self.mouse_init_x,
+                    y: self.mouse_init_y,
+                },
+                Point2 {
+                    x: self.mouse_x,
+                    y: self.mouse_y,
+                },
+            ));
         }
     }
 
@@ -67,6 +80,11 @@ impl event::EventHandler for MainState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
         let mut input_system = input_system::InputSystem {};
         input_system.run_now(&self.world);
+
+        let mut selection_system = selection_system::SelectionSystem {};
+        selection_system.run_now(&self.world);
+
+        self.world.maintain();
         Ok(())
     }
 
@@ -171,39 +189,40 @@ fn initialize_level(world: &mut World) {
         },
     );
     for i in 0..100 {
-        for j in 0..25 {
-            components::create_player(
-                world,
-                Position {
-                    x: 0.0 + j as f32 * 4.0,
-                    y: i as f32,
-                    z: 0.0,
-                },
-            );
-            components::create_box(
-                world,
-                Position {
-                    x: 1.0 + j as f32 * 4.0,
-                    y: i as f32,
-                    z: 0.0,
-                },
-            );
+        for j in 0..100 {
             components::create_floor(
                 world,
                 Position {
-                    x: 2.0 + j as f32 * 4.0,
-                    y: i as f32,
-                    z: 0.0,
-                },
-            );
-            components::create_wall(
-                world,
-                Position {
-                    x: 3.0 + j as f32 * 4.0,
+                    x: j as f32,
                     y: i as f32,
                     z: 0.0,
                 },
             );
         }
     }
+
+    components::create_actor(
+        world,
+        Position {
+            x: 4.0,
+            y: 4.0,
+            z: 0.0,
+        },
+    );
+    components::create_tent(
+        world,
+        Position {
+            x: 5.0,
+            y: 5.0,
+            z: 0.0,
+        },
+    );
+    components::create_tree(
+        world,
+        Position {
+            x: 6.0,
+            y: 6.0,
+            z: 0.0,
+        },
+    );
 }
