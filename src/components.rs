@@ -46,6 +46,12 @@ pub struct MoveCommand {
     pub y: f32,
 }
 
+#[derive(Component)]
+#[storage(VecStorage)]
+pub struct Collider {
+    pub radius: f32,
+}
+
 #[derive(Default)]
 pub struct InputQueue {
     pub keys_pressed: Vec<KeyCode>,
@@ -61,6 +67,7 @@ pub fn register_components(world: &mut World) {
     world.register::<Camera>();
     world.register::<Position>();
     world.register::<MoveCommand>();
+    world.register::<Collider>();
     world.register::<Renderable>();
     world.register::<Wall>();
     world.register::<Actor>();
@@ -130,5 +137,6 @@ pub fn create_actor(world: &mut World, position: Position) {
         .with(Renderable { id: 4 })
         .with(Actor {})
         .with(Selectable { is_selected: false })
+        .with(Collider { radius: 16.0 })
         .build();
 }

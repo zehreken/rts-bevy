@@ -37,9 +37,10 @@ impl<'a> System<'a> for RenderSystem<'a> {
         ReadStorage<'a, Position>,
         ReadStorage<'a, Renderable>,
         ReadStorage<'a, Camera>,
+        ReadStorage<'a, Collider>,
     );
     fn run(&mut self, data: Self::SystemData) {
-        let (positions, renderables, cameras) = data;
+        let (positions, renderables, cameras, colliders) = data;
 
         let mut camera: Camera = Camera::default();
         for c in cameras.join() {
@@ -96,6 +97,21 @@ impl<'a> System<'a> for RenderSystem<'a> {
 
         // Don't forget to clear the batch, without this performance will go down!
         self.texture_atlas.spritebatch.clear();
+
+        for (position, collider) in (&positions, &colliders).join() {
+            // println!("{}, {}", position.x, collider.radius);
+            let mesh = graphics::Mesh::new_circle(
+                self.context,
+                graphics::DrawMode::Stroke(graphics::StrokeOptions::default()),
+                ggez::nalgebra::Point2::new(position.x * 32.0 + 16.0, position.y * 32.0 + 16.0),
+                collider.radius,
+                2.0,
+                graphics::WHITE,
+            )
+            .unwrap();
+
+            graphics::draw(self.context, &mesh, DrawParam::default()).unwrap();
+        }
 
         let fps = format!("FPS: {}", ggez::timer::fps(self.context));
         self.draw_text(&fps, 0.0, 500.0);

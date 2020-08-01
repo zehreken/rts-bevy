@@ -8,6 +8,7 @@ use specs::{RunNow, World, WorldExt};
 use std::path;
 
 mod camera_system;
+mod collision_system;
 mod components;
 mod input_system;
 mod map;
@@ -215,14 +216,17 @@ fn initialize_level(world: &mut World) {
         }
     }
 
-    components::create_actor(
-        world,
-        Position {
-            x: 4.0,
-            y: 4.0,
-            z: 0.0,
-        },
-    );
+    for i in 0..10 {
+        components::create_actor(
+            world,
+            Position {
+                x: i as f32 + 4.0,
+                y: 4.0,
+                z: 0.0,
+            },
+        );
+    }
+
     components::create_tent(
         world,
         Position {
