@@ -11,6 +11,7 @@ mod camera_system;
 mod components;
 mod input_system;
 mod map;
+mod move_command_system;
 mod move_system;
 mod render_system;
 mod selection_system;
@@ -89,9 +90,14 @@ impl event::EventHandler for MainState {
         let mut selection_system = selection_system::SelectionSystem {};
         selection_system.run_now(&self.world);
 
+        let mut move_command_system = move_command_system::MoveCommandSystem {};
+        move_command_system.run_now(&self.world);
+
         let mut move_system = move_system::MoveSystem {};
         move_system.run_now(&self.world);
 
+        // After dynamic entity deletion, a call to World::maintain is necessary
+        // in order to make the changes persistent and delete associated components.
         self.world.maintain();
         Ok(())
     }

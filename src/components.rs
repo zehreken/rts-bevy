@@ -39,6 +39,13 @@ pub struct Selectable {
     pub is_selected: bool,
 }
 
+#[derive(Component)]
+#[storage(VecStorage)]
+pub struct MoveCommand {
+    pub x: f32,
+    pub y: f32,
+}
+
 #[derive(Default)]
 pub struct InputQueue {
     pub keys_pressed: Vec<KeyCode>,
@@ -53,6 +60,7 @@ pub fn register_resources(world: &mut World) {
 pub fn register_components(world: &mut World) {
     world.register::<Camera>();
     world.register::<Position>();
+    world.register::<MoveCommand>();
     world.register::<Renderable>();
     world.register::<Wall>();
     world.register::<Actor>();
