@@ -20,18 +20,13 @@ impl<'a> System<'a> for MoveCommandSystem {
             println!("{:?}", move_command);
             for (selectable, ent) in (&selectables, &*entities).join() {
                 if selectable.is_selected {
-                    let scale = 4.0;
-                    // *position = Position {
-                    //     x: move_command.x / super::TILE_WIDTH / scale,
-                    //     y: move_command.y / super::TILE_HEIGHT / scale,
-                    //     z: 11.0,
-                    // };
+                    let _scale = 1.0;
                     move_commands
                         .insert(
                             ent,
                             MoveCommand {
-                                x: move_command.x / super::TILE_WIDTH / scale,
-                                y: move_command.y / super::TILE_HEIGHT / scale,
+                                x: move_command.x,
+                                y: move_command.y,
                             },
                         )
                         .unwrap();

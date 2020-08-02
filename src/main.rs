@@ -94,6 +94,9 @@ impl event::EventHandler for MainState {
         let mut move_command_system = move_command_system::MoveCommandSystem {};
         move_command_system.run_now(&self.world);
 
+        let mut collision_system = collision_system::CollisionSystem {};
+        collision_system.run_now(&self.world);
+
         let mut move_system = move_system::MoveSystem {};
         move_system.run_now(&self.world);
 
@@ -208,20 +211,20 @@ fn initialize_level(world: &mut World) {
             components::create_floor(
                 world,
                 Position {
-                    x: j as f32,
-                    y: i as f32,
+                    x: j as f32 * TILE_WIDTH,
+                    y: i as f32 * TILE_HEIGHT,
                     z: 0.0,
                 },
             );
         }
     }
 
-    for i in 0..10 {
+    for i in 0..3 {
         components::create_actor(
             world,
             Position {
-                x: i as f32 + 4.0,
-                y: 4.0,
+                x: 100.0 + i as f32 * 20.0,
+                y: 100.0,
                 z: 0.0,
             },
         );

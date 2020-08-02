@@ -59,11 +59,11 @@ impl<'a> System<'a> for RenderSystem<'a> {
 
         for (position, renderable) in rendering_data.iter() {
             let image_path = "N/A".to_string();
-            let x = position.x as f32 * super::TILE_WIDTH + camera.x;
-            let y = position.y as f32 * super::TILE_HEIGHT + camera.y;
+            let x = position.x as f32 + camera.x;
+            let y = position.y as f32 + camera.y;
             let z = position.z;
 
-            let scale = 4.0;
+            let scale = 1.0;
             let rect = super::texture_atlas::get_image_rect(renderable.id);
             let draw_params = DrawParam::new()
                 .src(rect)
@@ -103,9 +103,9 @@ impl<'a> System<'a> for RenderSystem<'a> {
             let mesh = graphics::Mesh::new_circle(
                 self.context,
                 graphics::DrawMode::Stroke(graphics::StrokeOptions::default()),
-                ggez::nalgebra::Point2::new(position.x * 32.0 + 16.0, position.y * 32.0 + 16.0),
+                ggez::nalgebra::Point2::new(position.x + 4.0, position.y + 4.0),
                 collider.radius,
-                2.0,
+                1.0,
                 graphics::WHITE,
             )
             .unwrap();

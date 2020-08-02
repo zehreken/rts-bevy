@@ -48,6 +48,13 @@ pub struct MoveCommand {
 
 #[derive(Component)]
 #[storage(VecStorage)]
+pub struct SeparationCommand {
+    pub x: f32,
+    pub y: f32,
+}
+
+#[derive(Component)]
+#[storage(VecStorage)]
 pub struct Collider {
     pub radius: f32,
 }
@@ -68,6 +75,7 @@ pub fn register_components(world: &mut World) {
     world.register::<Position>();
     world.register::<MoveCommand>();
     world.register::<Collider>();
+    world.register::<SeparationCommand>();
     world.register::<Renderable>();
     world.register::<Wall>();
     world.register::<Actor>();
@@ -137,6 +145,6 @@ pub fn create_actor(world: &mut World, position: Position) {
         .with(Renderable { id: 4 })
         .with(Actor {})
         .with(Selectable { is_selected: false })
-        .with(Collider { radius: 16.0 })
+        .with(Collider { radius: 4.0 })
         .build();
 }
