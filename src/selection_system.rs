@@ -1,4 +1,5 @@
 use super::components::*;
+use super::setup::*;
 use specs::join::Join;
 use specs::{ReadStorage, System, Write, WriteStorage};
 

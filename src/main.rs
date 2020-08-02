@@ -1,21 +1,25 @@
 use components::*;
+use entity_factory::*;
 use ggez::event::{KeyCode, KeyMods, MouseButton};
 use ggez::graphics;
 use ggez::graphics::{DrawMode, DrawParam, Rect};
 use ggez::{conf, event, Context, GameResult};
 use render_system::*;
+use setup::*;
 use specs::{RunNow, World, WorldExt};
 use std::path;
 
 mod camera_system;
 mod collision_system;
 mod components;
+mod entity_factory;
 mod input_system;
 mod map;
 mod move_command_system;
 mod move_system;
 mod render_system;
 mod selection_system;
+mod setup;
 mod texture_atlas;
 mod transform_system;
 
@@ -165,8 +169,8 @@ impl event::EventHandler for MainState {
 
 fn main() -> GameResult {
     let mut world = World::new();
-    components::register_resources(&mut world);
-    components::register_components(&mut world);
+    setup::register_resources(&mut world);
+    setup::register_components(&mut world);
     initialize_level(&mut world);
 
     let context_builder = ggez::ContextBuilder::new("rts", "zehreken")
@@ -198,7 +202,7 @@ fn main() -> GameResult {
 }
 
 fn initialize_level(world: &mut World) {
-    components::create_camera(
+    entity_factory::create_camera(
         world,
         Position {
             x: 0.0,
@@ -208,7 +212,7 @@ fn initialize_level(world: &mut World) {
     );
     for i in 0..100 {
         for j in 0..100 {
-            components::create_floor(
+            entity_factory::create_floor(
                 world,
                 Position {
                     x: j as f32 * TILE_WIDTH,
@@ -220,7 +224,7 @@ fn initialize_level(world: &mut World) {
     }
 
     for i in 0..10 {
-        components::create_actor(
+        entity_factory::create_actor(
             world,
             Position {
                 x: 100.0 + i as f32 * 20.0,
@@ -230,7 +234,7 @@ fn initialize_level(world: &mut World) {
         );
     }
 
-    components::create_tent(
+    entity_factory::create_tent(
         world,
         Position {
             x: 5.0,
@@ -239,7 +243,7 @@ fn initialize_level(world: &mut World) {
         },
     );
     for i in 0..10 {
-        components::create_tree(
+        entity_factory::create_tree(
             world,
             Position {
                 x: 400.0 + i as f32 * 20.0,

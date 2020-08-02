@@ -1,7 +1,7 @@
 use super::components::*;
 use ggez::event::KeyCode;
 use specs::{System, Write, WriteStorage};
-
+use super::setup::*;
 use specs::join::Join;
 
 pub struct InputSystem {}

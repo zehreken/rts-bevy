@@ -40,7 +40,7 @@ impl<'a> System<'a> for MoveSystem {
             position.y += speed * normalized.y;
 
             // println!("There must be one entity {:?}", direction.magnitude());
-            if direction.magnitude() < 3.0 {
+            if direction.magnitude() < 1.0 {
                 // println!("there");
                 to_remove.push(ent);
             }
