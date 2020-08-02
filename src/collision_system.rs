@@ -44,13 +44,16 @@ fn process_collision(
             let diff: Vector2<f32> =
                 Vector2::new(position_a.x - position_b.x, position_a.y - position_b.y);
             let distance: f32 = diff.magnitude();
+            let normalized = diff.normalize();
             // println!("{}", distance);
-            if distance < collider_a.radius + collider_b.radius {
+            if distance < 2.0 * (collider_a.radius + collider_b.radius) {
                 // a and be are so close, separate them
-                result[i].1.x += diff.x;
-                result[i].1.y += diff.y;
-                result[j].1.x -= diff.x;
-                result[j].1.y -= diff.y;
+                // factor increases if disntace decreases
+                let factor = 4.0 * (collider_a.radius + collider_b.radius) - distance;
+                result[i].1.x += normalized.x * factor;
+                result[i].1.y += normalized.y * factor;
+                result[j].1.x -= normalized.x * factor;
+                result[j].1.y -= normalized.y * factor;
             }
         }
     }

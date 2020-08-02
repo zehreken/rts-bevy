@@ -132,6 +132,7 @@ pub fn create_tree(world: &mut World, position: Position) {
             ..position
         })
         .with(Renderable { id: 75 })
+        .with(Collider { radius: 20.0 })
         .build();
 }
 

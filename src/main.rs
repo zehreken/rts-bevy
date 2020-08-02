@@ -219,7 +219,7 @@ fn initialize_level(world: &mut World) {
         }
     }
 
-    for i in 0..3 {
+    for i in 0..10 {
         components::create_actor(
             world,
             Position {
@@ -238,12 +238,14 @@ fn initialize_level(world: &mut World) {
             z: 0.0,
         },
     );
-    components::create_tree(
-        world,
-        Position {
-            x: 6.0,
-            y: 6.0,
-            z: 0.0,
-        },
-    );
+    for i in 0..10 {
+        components::create_tree(
+            world,
+            Position {
+                x: 400.0 + i as f32 * 20.0,
+                y: 400.0,
+                z: 0.0,
+            },
+        );
+    }
 }

@@ -18,7 +18,7 @@ impl RenderSystem<'_> {
     pub fn draw_text(&mut self, text_string: &str, x: f32, y: f32) {
         let text = graphics::Text::new(text_string);
         let destination = na::Point2::new(x, y);
-        let color = Some(graphics::Color::new(0.0, 0.0, 0.0, 1.0));
+        let color = Some(graphics::Color::new(1.0, 0.0, 0.21, 1.0));
         let dimensions = na::Point2::new(0.0, 20.0);
 
         graphics::queue_text(self.context, &text, dimensions, color);
@@ -98,19 +98,22 @@ impl<'a> System<'a> for RenderSystem<'a> {
         // Don't forget to clear the batch, without this performance will go down!
         self.texture_atlas.spritebatch.clear();
 
-        for (position, collider) in (&positions, &colliders).join() {
-            // println!("{}, {}", position.x, collider.radius);
-            let mesh = graphics::Mesh::new_circle(
-                self.context,
-                graphics::DrawMode::Stroke(graphics::StrokeOptions::default()),
-                ggez::nalgebra::Point2::new(position.x + 4.0, position.y + 4.0),
-                collider.radius,
-                1.0,
-                graphics::WHITE,
-            )
-            .unwrap();
+        const DEBUG: bool = false;
+        if DEBUG {
+            for (position, collider) in (&positions, &colliders).join() {
+                // println!("{}, {}", position.x, collider.radius);
+                let mesh = graphics::Mesh::new_circle(
+                    self.context,
+                    graphics::DrawMode::Stroke(graphics::StrokeOptions::default()),
+                    ggez::nalgebra::Point2::new(position.x + 4.0, position.y + 4.0),
+                    collider.radius,
+                    1.0,
+                    graphics::WHITE,
+                )
+                .unwrap();
 
-            graphics::draw(self.context, &mesh, DrawParam::default()).unwrap();
+                graphics::draw(self.context, &mesh, DrawParam::default()).unwrap();
+            }
         }
 
         let fps = format!("FPS: {}", ggez::timer::fps(self.context));

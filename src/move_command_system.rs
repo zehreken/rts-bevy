@@ -7,14 +7,13 @@ pub struct MoveCommandSystem {}
 impl<'a> System<'a> for MoveCommandSystem {
     type SystemData = (
         Write<'a, InputQueue>,
-        WriteStorage<'a, Position>,
         WriteStorage<'a, MoveCommand>,
         ReadStorage<'a, Selectable>,
         Entities<'a>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut input_queue, mut positions, mut move_commands, selectables, entities) = data;
+        let (mut input_queue, mut move_commands, selectables, entities) = data;
 
         if let Some(move_command) = input_queue.move_commands.pop() {
             println!("{:?}", move_command);
