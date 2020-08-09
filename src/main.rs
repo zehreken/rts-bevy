@@ -1,7 +1,7 @@
 use components::position::*;
 use ggez::event::{KeyCode, KeyMods, MouseButton};
 use ggez::graphics;
-use ggez::graphics::{DrawMode, DrawParam, Rect};
+use ggez::graphics::{DrawMode, DrawParam};
 use ggez::{conf, event, Context, GameResult};
 use render_system::*;
 use setup::*;
@@ -119,19 +119,6 @@ impl event::EventHandler for MainState {
         }
 
         if self.is_mouse_button_down {
-            let mesh = graphics::Mesh::new_rectangle(
-                ctx,
-                DrawMode::Stroke(graphics::StrokeOptions::default()),
-                Rect::new(
-                    self.mouse_init_x,
-                    self.mouse_init_y,
-                    self.mouse_x - self.mouse_init_x,
-                    self.mouse_y - self.mouse_init_y,
-                ),
-                graphics::WHITE,
-            )
-            .unwrap();
-
             use ggez::mint::Point2;
             let p1 = Point2 {
                 x: self.mouse_init_x,
@@ -185,8 +172,7 @@ fn main() -> GameResult {
     )
     .unwrap();
 
-    let texture_atlas =
-        texture_atlas::TextureAtlas::new(context, "/images/colored_tilemap_packed.png".to_string());
+    let texture_atlas = texture_atlas::TextureAtlas::new(context);
     let game = &mut MainState {
         world,
         texture_atlas,
@@ -209,6 +195,7 @@ fn initialize_level(world: &mut World) {
             z: 0.0,
         },
     );
+
     for i in 0..100 {
         for j in 0..100 {
             entity_factory::create_floor(
@@ -241,6 +228,7 @@ fn initialize_level(world: &mut World) {
             z: 0.0,
         },
     );
+
     for i in 0..10 {
         entity_factory::create_tree(
             world,

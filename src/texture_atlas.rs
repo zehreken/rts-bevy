@@ -5,14 +5,15 @@ use ggez::Context;
 
 const ROW_COUNT: u8 = 10;
 const COLUMN_COUNT: u8 = 14;
+const PATH: &str = "/images/colored_tilemap_packed.png";
 
 pub struct TextureAtlas {
     pub spritebatch: SpriteBatch,
 }
 
 impl TextureAtlas {
-    pub fn new(context: &mut Context, path: String) -> Self {
-        let mut image = Image::new(context, path).unwrap();
+    pub fn new(context: &mut Context) -> Self {
+        let mut image = Image::new(context, PATH).unwrap();
         let mode = FilterMode::Nearest; // This keeps the pixels perfect
         image.set_filter(mode);
         let spritebatch = SpriteBatch::new(image);
