@@ -4,10 +4,8 @@ use ggez::graphics;
 use ggez::graphics::DrawParam;
 use ggez::nalgebra as na;
 use ggez::Context;
-use itertools::Itertools;
 use specs::join::Join;
 use specs::{ReadStorage, System};
-use std::collections::HashMap;
 
 pub struct RenderSystem<'a> {
     pub context: &'a mut Context,
@@ -54,48 +52,27 @@ impl<'a> System<'a> for RenderSystem<'a> {
                 .expect("Error while comparing 'z'")
         });
 
-        let mut rendering_batches: HashMap<u8, HashMap<String, Vec<DrawParam>>> = HashMap::new();
-
-        for (position, renderable) in rendering_data.iter() {
-            let image_path = "N/A".to_string();
+        let spritebatch = &mut self.texture_atlas.spritebatch;
+        for (position, renderable) in rendering_data {
             let x = position.x as f32 + camera.x;
             let y = position.y as f32 + camera.y;
             let z = position.z;
 
             let scale = 1.0;
             let rect = crate::texture_atlas::get_image_rect(renderable.id);
-            let draw_params = DrawParam::new()
+            let draw_param = DrawParam::new()
                 .src(rect)
                 .dest(na::Point2::new(x * scale, y * scale))
                 .scale(na::Vector2::new(scale, scale));
-            rendering_batches
-                .entry(z as u8)
-                .or_default()
-                .entry(image_path)
-                .or_default()
-                .push(draw_params);
+
+            spritebatch.add(draw_param);
         }
 
-        for (_z, group) in rendering_batches
-            .iter()
-            .sorted_by(|a, b| Ord::cmp(&a.0, &b.0))
-        {
-            for (image_path, draw_params) in group {
-                // let image = graphics::Image::new(self.context, image_path).expect("expected image");
-                // // let mut sprite_batch = SpriteBatch::new(image);
-                let sprite_batch = &mut self.texture_atlas.spritebatch;
-
-                for draw_param in draw_params.iter() {
-                    sprite_batch.add(*draw_param);
-                }
-
-                graphics::draw(self.context, sprite_batch, graphics::DrawParam::new())
-                    .expect("expected render");
-            }
-        }
+        let param = graphics::DrawParam::new().scale(na::Vector2::new(1.0, 1.0));
+        graphics::draw(self.context, spritebatch, param).expect("expected render");
 
         // Don't forget to clear the batch, without this performance will go down!
-        self.texture_atlas.spritebatch.clear();
+        spritebatch.clear();
 
         const DEBUG: bool = false;
         if DEBUG {
