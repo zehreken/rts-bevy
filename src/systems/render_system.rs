@@ -1,5 +1,5 @@
-use super::components::*;
-use super::texture_atlas::TextureAtlas;
+use crate::components::*;
+use crate::texture_atlas::TextureAtlas;
 use ggez::graphics;
 use ggez::graphics::DrawParam;
 use ggez::nalgebra as na;
@@ -46,7 +46,6 @@ impl<'a> System<'a> for RenderSystem<'a> {
         for c in cameras.join() {
             camera = *c;
         }
-        graphics::clear(self.context, graphics::Color::new(1.0, 0.0, 0.22, 1.0));
 
         let mut rendering_data = (&positions, &renderables).join().collect::<Vec<_>>();
         rendering_data.sort_by(|&a, &b| {
@@ -64,7 +63,7 @@ impl<'a> System<'a> for RenderSystem<'a> {
             let z = position.z;
 
             let scale = 1.0;
-            let rect = super::texture_atlas::get_image_rect(renderable.id);
+            let rect = crate::texture_atlas::get_image_rect(renderable.id);
             let draw_params = DrawParam::new()
                 .src(rect)
                 .dest(na::Point2::new(x * scale, y * scale))
@@ -114,9 +113,9 @@ impl<'a> System<'a> for RenderSystem<'a> {
 
                 graphics::draw(self.context, &mesh, DrawParam::default()).unwrap();
             }
-        }
 
-        let fps = format!("FPS: {}", ggez::timer::fps(self.context));
-        self.draw_text(&fps, 0.0, 500.0);
+            let fps = format!("FPS: {}", ggez::timer::fps(self.context));
+            self.draw_text(&fps, 0.0, 500.0);
+        }
     }
 }

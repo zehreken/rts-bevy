@@ -1,5 +1,5 @@
-use super::components::*;
-use super::setup::*;
+use crate::components::*;
+use crate::setup::*;
 use specs::join::Join;
 use specs::{Entities, ReadStorage, System, Write, WriteStorage};
 

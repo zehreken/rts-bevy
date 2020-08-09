@@ -1,5 +1,5 @@
-use super::components::*;
-use super::setup::*;
+use crate::components::*;
+use crate::setup::*;
 use ggez::event::KeyCode;
 use specs::join::Join;
 use specs::{System, Write, WriteStorage};

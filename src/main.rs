@@ -1,26 +1,19 @@
-use components::position::*;
+use components::*;
 use ggez::event::{KeyCode, KeyMods, MouseButton};
 use ggez::graphics;
 use ggez::graphics::{DrawMode, DrawParam};
 use ggez::{conf, event, Context, GameResult};
-use render_system::*;
 use setup::*;
 use specs::{RunNow, World, WorldExt};
 use std::path;
+use systems::*;
 
-mod camera_system;
-mod collision_system;
 mod components;
 mod entity_factory;
-mod input_system;
 mod map;
-mod move_command_system;
-mod move_system;
-mod render_system;
-mod selection_system;
 mod setup;
+mod systems;
 mod texture_atlas;
-mod transform_system;
 
 pub const TILE_WIDTH: f32 = 8.0;
 pub const TILE_HEIGHT: f32 = 8.0;
@@ -110,6 +103,9 @@ impl event::EventHandler for MainState {
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
+        // Clear window
+        graphics::clear(ctx, graphics::Color::new(1.0, 0.0, 0.22, 1.0));
+
         {
             let mut render_system = RenderSystem {
                 context: ctx,
@@ -147,6 +143,7 @@ impl event::EventHandler for MainState {
             graphics::draw(ctx, &mesh, DrawParam::default()).unwrap();
         }
 
+        // Present
         graphics::present(ctx).expect("Error while presenting");
 
         Ok(())
@@ -154,16 +151,11 @@ impl event::EventHandler for MainState {
 }
 
 fn main() -> GameResult {
-    let mut world = World::new();
-    setup::register_resources(&mut world);
-    setup::register_components(&mut world);
-    initialize_level(&mut world);
-
     let context_builder = ggez::ContextBuilder::new("rts", "zehreken")
         .window_setup(conf::WindowSetup::default().title("rts"))
         .window_mode(conf::WindowMode::default().dimensions(800.0, 600.0))
         .add_resource_path(path::PathBuf::from("./resources"));
-    let (context, events_loop) = &mut context_builder.build()?;
+    let (context, events_loop) = &mut context_builder.build().unwrap();
 
     // with this you can set scale
     ggez::graphics::set_screen_coordinates(
@@ -171,6 +163,9 @@ fn main() -> GameResult {
         ggez::graphics::Rect::new(0.0, 0.0, 800.0 * 1.0, 600.0 * 1.0),
     )
     .unwrap();
+    // ===========================
+
+    let world = create_world();
 
     let texture_atlas = texture_atlas::TextureAtlas::new(context);
     let game = &mut MainState {
@@ -184,6 +179,15 @@ fn main() -> GameResult {
     };
 
     event::run(context, events_loop, game)
+}
+
+fn create_world() -> World {
+    let mut world = World::new();
+    setup::register_resources(&mut world);
+    setup::register_components(&mut world);
+    initialize_level(&mut world);
+
+    world
 }
 
 fn initialize_level(world: &mut World) {

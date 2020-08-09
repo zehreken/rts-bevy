@@ -1,4 +1,4 @@
-use super::components::*;
+use crate::components::*;
 use ggez::nalgebra as na;
 use na::Vector2;
 use specs::join::Join;

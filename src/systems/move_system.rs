@@ -1,4 +1,4 @@
-use super::components::*;
+use crate::components::*;
 use ggez::nalgebra::Vector2;
 use specs::join::Join;
 use specs::{Entities, System, WriteStorage};
