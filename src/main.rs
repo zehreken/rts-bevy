@@ -1,5 +1,4 @@
-use components::*;
-use entity_factory::*;
+use components::position::*;
 use ggez::event::{KeyCode, KeyMods, MouseButton};
 use ggez::graphics;
 use ggez::graphics::{DrawMode, DrawParam, Rect};

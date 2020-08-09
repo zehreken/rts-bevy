@@ -1,7 +1,7 @@
 use super::components::*;
+use super::setup::*;
 use specs::join::Join;
 use specs::{Entities, ReadStorage, System, Write, WriteStorage};
-use super::setup::*;
 
 pub struct MoveCommandSystem {}
 

@@ -1,4 +1,6 @@
-use super::components::*;
+use super::components::collider::*;
+use super::components::position::*;
+use super::components::separation_command::*;
 use ggez::nalgebra as na;
 use na::Vector2;
 use specs::join::Join;
