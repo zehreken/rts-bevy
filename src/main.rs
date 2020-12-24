@@ -42,23 +42,36 @@ fn movement_system(time: Res<Time>, mut query: Query<(&Actor, &mut Transform)>) 
 #[derive(Default)]
 struct MouseState {
     mouse_button_event_reader: EventReader<MouseButtonInput>,
-    mouse_motion_event_reader: EventReader<MouseMotion>,
+    cursor_moved_event_reader: EventReader<CursorMoved>,
 }
 
 fn mouse_input_system(
     mut state: Local<MouseState>,
     mouse_button_input_events: Res<Events<MouseButtonInput>>,
-    mouse_motion_events: Res<Events<MouseMotion>>,
+    cursor_moved_events: Res<Events<CursorMoved>>,
 ) {
     for event in state
         .mouse_button_event_reader
         .iter(&mouse_button_input_events)
     {
-        println!("{:?}", event);
-    }
-
-    for event in state.mouse_motion_event_reader.iter(&mouse_motion_events) {
-        println!("{:?}", event);
+        // println!("button: {:?} {:?}", event.button, event.state);
+        match event.button {
+            MouseButton::Left => {
+                let p = state
+                    .cursor_moved_event_reader
+                    .latest(&cursor_moved_events)
+                    .unwrap();
+                println!("left click position: {:?}", p);
+            }
+            MouseButton::Right => {
+                let p = state
+                    .cursor_moved_event_reader
+                    .latest(&cursor_moved_events)
+                    .unwrap();
+                println!("right click position: {:?}", p);
+            }
+            _ => (),
+        }
     }
 }
 
