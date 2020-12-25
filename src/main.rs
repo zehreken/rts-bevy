@@ -1,7 +1,5 @@
-use bevy::{
-    input::mouse::{MouseButtonInput, MouseMotion},
-    sprite::TextureAtlasBuilder,
-};
+use bevy::input::ElementState;
+use bevy::{input::mouse::MouseButtonInput, sprite::TextureAtlasBuilder};
 use bevy::{math::vec3, prelude::*};
 
 mod texture_manager;
@@ -31,11 +29,14 @@ struct Collider {
     radius: f32,
 }
 
-fn movement_system(time: Res<Time>, mut query: Query<(&Actor, &mut Transform)>) {
+fn movement_system(time: Res<Time>, mut query: Query<(&Actor, &MoveCommand, &mut Transform)>) {
     let delta_seconds = f32::min(0.2, time.delta_seconds());
 
-    for (_actor, mut transform) in query.iter_mut() {
-        transform.translation += vec3(10.0, 0.0, 0.0) * delta_seconds;
+    for (_actor, move_command, mut transform) in query.iter_mut() {
+        let target = vec3(move_command.x, move_command.y, 0.0);
+        let mut diff = target - transform.translation;
+        diff = diff / 10.0;
+        transform.translation += vec3(diff.x, diff.y, 0.0) * delta_seconds;
     }
 }
 
@@ -46,9 +47,11 @@ struct MouseState {
 }
 
 fn mouse_input_system(
+    commands: &mut Commands,
     mut state: Local<MouseState>,
     mouse_button_input_events: Res<Events<MouseButtonInput>>,
     cursor_moved_events: Res<Events<CursorMoved>>,
+    mut query: Query<(Entity, &Actor)>,
 ) {
     for event in state
         .mouse_button_event_reader
@@ -61,14 +64,31 @@ fn mouse_input_system(
                     .cursor_moved_event_reader
                     .latest(&cursor_moved_events)
                     .unwrap();
-                println!("left click position: {:?}", p);
+                match event.state {
+                    ElementState::Pressed => println!("left button down: {:?}", p),
+                    ElementState::Released => {
+                        for (entity, _) in query.iter_mut() {
+                            commands.insert_one(
+                                entity,
+                                MoveCommand {
+                                    x: p.position.x,
+                                    y: p.position.y,
+                                },
+                            );
+                        }
+                        println!("left button up: {:?}", p);
+                    }
+                }
             }
             MouseButton::Right => {
                 let p = state
                     .cursor_moved_event_reader
                     .latest(&cursor_moved_events)
                     .unwrap();
-                println!("right click position: {:?}", p);
+                match event.state {
+                    ElementState::Pressed => println!("right button down: {:?}", p),
+                    ElementState::Released => println!("right button up: {:?}", p),
+                }
             }
             _ => (),
         }
