@@ -1,7 +1,9 @@
 use bevy::input::ElementState;
+use bevy::render::camera::Camera;
 use bevy::{input::mouse::MouseButtonInput, sprite::TextureAtlasBuilder};
 use bevy::{math::vec3, prelude::*};
 
+mod camera_utils;
 mod texture_manager;
 use texture_manager::TextureAtlasHandles;
 
@@ -15,28 +17,41 @@ pub enum AppState {
 
 struct Actor {}
 
+#[derive(Debug)]
 struct MoveCommand {
     x: f32,
     y: f32,
 }
 
-struct SeparationCommand {
+struct _SeparationCommand {
     x: f32,
     y: f32,
 }
 
 struct Collider {
-    radius: f32,
+    _radius: f32,
 }
 
-fn movement_system(time: Res<Time>, mut query: Query<(&Actor, &MoveCommand, &mut Transform)>) {
+fn movement_system(
+    time: Res<Time>,
+    windows: Res<Windows>,
+    camera_query: Query<(&Camera, &Transform)>,
+    mut query: Query<(&Actor, &MoveCommand, &mut Transform)>,
+) {
     let delta_seconds = f32::min(0.2, time.delta_seconds());
+    let window = windows.get_primary().unwrap();
+    for (_camera, transform) in camera_query.iter() {
+        let camera_transform = transform;
 
-    for (_actor, move_command, mut transform) in query.iter_mut() {
-        let target = vec3(move_command.x, move_command.y, 0.0);
-        let mut diff = target - transform.translation;
-        diff = diff / 10.0;
-        transform.translation += vec3(diff.x, diff.y, 0.0) * delta_seconds;
+        for (_actor, move_command, mut transform) in query.iter_mut() {
+            let target = vec3(move_command.x, move_command.y, 0.0);
+            let world_point =
+                camera_utils::screen_to_world_point(window, camera_transform, &target);
+            let mut diff = world_point - transform.translation;
+            // println!("{:?}, {:?}", move_command, transform.translation);
+            diff = diff / 10.0;
+            transform.translation += vec3(diff.x, diff.y, 0.0) * delta_seconds;
+        }
     }
 }
 
@@ -44,6 +59,12 @@ fn movement_system(time: Res<Time>, mut query: Query<(&Actor, &MoveCommand, &mut
 struct MouseState {
     mouse_button_event_reader: EventReader<MouseButtonInput>,
     cursor_moved_event_reader: EventReader<CursorMoved>,
+}
+
+fn test_system(query: Query<(&Camera, &Transform)>) {
+    for (_camera, transform) in query.iter() {
+        // println!("{}", transform.translation.x);
+    }
 }
 
 fn mouse_input_system(
@@ -113,6 +134,7 @@ fn main() {
             texture_manager::check_textures.system(),
         )
         .on_state_enter(STAGE, AppState::Finished, setup.system())
+        .add_system(test_system.system())
         .add_system(mouse_input_system.system())
         .add_system(movement_system.system())
         .run();
@@ -153,7 +175,7 @@ fn setup(
         })
         .with(Actor {})
         // Add collider to the sprite
-        .with(Collider { radius: 1.0 })
+        .with(Collider { _radius: 1.0 })
         .spawn(SpriteBundle {
             material: materials.add(texture_atlas_texture.into()),
             transform: Transform::from_translation(Vec3::new(-300.0, 0.0, 0.0)),
