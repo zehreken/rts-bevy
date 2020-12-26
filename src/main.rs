@@ -40,6 +40,7 @@ fn movement_system(
 ) {
     let delta_seconds = f32::min(0.2, time.delta_seconds());
     let window = windows.get_primary().unwrap();
+    let speed = 100.0;
     for (_camera, transform) in camera_query.iter() {
         let camera_transform = transform;
 
@@ -47,10 +48,9 @@ fn movement_system(
             let target = vec3(move_command.x, move_command.y, 0.0);
             let world_point =
                 camera_utils::screen_to_world_point(window, camera_transform, &target);
-            let mut diff = world_point - transform.translation;
+            let diff = (world_point - transform.translation).normalize();
             // println!("{:?}, {:?}", move_command, transform.translation);
-            diff = diff / 10.0;
-            transform.translation += vec3(diff.x, diff.y, 0.0) * delta_seconds;
+            transform.translation += vec3(diff.x, diff.y, 0.0) * speed * delta_seconds;
         }
     }
 }
