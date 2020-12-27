@@ -23,20 +23,20 @@ struct MoveCommand {
     y: f32,
 }
 
-struct _SeparationCommand {
+struct SeparationCommand {
     x: f32,
     y: f32,
 }
 
 struct Collider {
-    _radius: f32,
+    radius: f32,
 }
 
 fn movement_system(
     time: Res<Time>,
     windows: Res<Windows>,
     camera_query: Query<(&Camera, &Transform)>,
-    mut query: Query<(&Actor, &MoveCommand, &mut Transform)>,
+    mut query: Query<(&Actor, &MoveCommand, &SeparationCommand, &mut Transform)>,
 ) {
     let delta_seconds = f32::min(0.2, time.delta_seconds());
     let window = windows.get_primary().unwrap();
@@ -44,8 +44,12 @@ fn movement_system(
     for (_camera, transform) in camera_query.iter() {
         let camera_transform = transform;
 
-        for (_actor, move_command, mut transform) in query.iter_mut() {
-            let target = vec3(move_command.x, move_command.y, 0.0);
+        for (_actor, move_command, separation_command, mut transform) in query.iter_mut() {
+            let target = vec3(
+                move_command.x + separation_command.x,
+                move_command.y + separation_command.y,
+                0.0,
+            );
             let world_point =
                 camera_utils::screen_to_world_point(window, camera_transform, &target);
             let diff = (world_point - transform.translation).normalize();
@@ -55,16 +59,53 @@ fn movement_system(
     }
 }
 
+fn collision_system(commands: &mut Commands, query: Query<(Entity, &Transform, &Collider)>) {
+    let mut to_process = vec![];
+    for (entity, transform, collider) in query.iter() {
+        to_process.push((transform.translation, collider, entity));
+    }
+
+    if to_process.len() > 1 {
+        let mut result = Vec::with_capacity(to_process.len());
+        for i in 0..result.capacity() {
+            result.push((to_process[i].2, SeparationCommand { x: 0.0, y: 0.0 }));
+        }
+
+        for i in 0..(to_process.len() - 1) {
+            for j in (i + 1)..to_process.len() {
+                let (position_a, collider_a, _) = to_process[i];
+                let (position_b, collider_b, _) = to_process[j];
+                let diff: Vec3 = vec3(
+                    position_a.x - position_b.x,
+                    position_a.y - position_b.y,
+                    0.0,
+                );
+                let distance: f32 = diff.length();
+                let normalized = diff.normalize();
+                // println!("{}", distance);
+                if distance < 2.0 * (collider_a.radius + collider_b.radius) {
+                    // a and be are so close, separate them
+                    // factor increases if disntace decreases
+                    let factor = 4.0 * (collider_a.radius + collider_b.radius) - distance;
+                    result[i].1.x += normalized.x * factor;
+                    result[i].1.y += normalized.y * factor;
+                    result[j].1.x -= normalized.x * factor;
+                    result[j].1.y -= normalized.y * factor;
+                }
+            }
+        }
+
+        for r in result {
+            // This is how we add components, r.0 is entity and r.1 is the component
+            commands.insert_one(r.0, r.1);
+        }
+    }
+}
+
 #[derive(Default)]
 struct MouseState {
     mouse_button_event_reader: EventReader<MouseButtonInput>,
     cursor_moved_event_reader: EventReader<CursorMoved>,
-}
-
-fn test_system(query: Query<(&Camera, &Transform)>) {
-    for (_camera, transform) in query.iter() {
-        // println!("{}", transform.translation.x);
-    }
 }
 
 fn mouse_input_system(
@@ -134,8 +175,8 @@ fn main() {
             texture_manager::check_textures.system(),
         )
         .on_state_enter(STAGE, AppState::Finished, setup.system())
-        .add_system(test_system.system())
         .add_system(mouse_input_system.system())
+        .add_system(collision_system.system())
         .add_system(movement_system.system())
         .run();
 }
@@ -163,22 +204,25 @@ fn setup(
     // Set up a scene to display our texture atlas
     commands
         .spawn(Camera2dBundle::default())
-        .spawn(SpriteSheetBundle {
-            transform: Transform {
-                translation: Vec3::new(150.0, 0.0, 0.0),
-                scale: Vec3::splat(4.0),
-                ..Default::default()
-            },
-            sprite: TextureAtlasSprite::new(vendor_index as u32),
-            texture_atlas: atlas_handle,
-            ..Default::default()
-        })
-        .with(Actor {})
-        // Add collider to the sprite
-        .with(Collider { _radius: 1.0 })
         .spawn(SpriteBundle {
             material: materials.add(texture_atlas_texture.into()),
             transform: Transform::from_translation(Vec3::new(-300.0, 0.0, 0.0)),
             ..Default::default()
         });
+
+    for i in 0..50 {
+        commands
+            .spawn(SpriteSheetBundle {
+                transform: Transform {
+                    translation: Vec3::new(150.0, i as f32 * 20.0, 0.0),
+                    scale: Vec3::splat(4.0),
+                    ..Default::default()
+                },
+                sprite: TextureAtlasSprite::new(vendor_index as u32),
+                texture_atlas: atlas_handle.clone(),
+                ..Default::default()
+            })
+            .with(Actor {})
+            .with(Collider { radius: 8.0 });
+    }
 }
