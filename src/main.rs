@@ -196,21 +196,30 @@ fn setup(
     }
 
     let texture_atlas = texture_atlas_builder.finish(&mut textures).unwrap();
-    let texture_atlas_texture = texture_atlas.texture.clone();
-    let vendor_handle = asset_server.get_handle("tiles/colored/tile_0004.png");
-    let vendor_index = texture_atlas.get_texture_index(&vendor_handle).unwrap();
+    // let texture_atlas_texture = texture_atlas.texture.clone();
+    let actor_vendor_index = texture_manager::get_texture_index(
+        &texture_atlas,
+        &asset_server,
+        "tiles/colored/tile_0004.png",
+    );
+
+    let wall_vendor_index = texture_manager::get_texture_index(
+        &texture_atlas,
+        &asset_server,
+        "tiles/colored/tile_0001.png",
+    );
+
     let atlas_handle = texture_atlases.add(texture_atlas);
 
     // Set up a scene to display our texture atlas
-    commands
-        .spawn(Camera2dBundle::default())
-        .spawn(SpriteBundle {
-            material: materials.add(texture_atlas_texture.into()),
-            transform: Transform::from_translation(Vec3::new(-300.0, 0.0, 0.0)),
-            ..Default::default()
-        });
+    commands.spawn(Camera2dBundle::default());
+    // .spawn(SpriteBundle {
+    //     material: materials.add(texture_atlas_texture.into()),
+    //     transform: Transform::from_translation(Vec3::new(-300.0, 0.0, 0.0)),
+    //     ..Default::default()
+    // });
 
-    for i in 0..50 {
+    for i in 0..10 {
         commands
             .spawn(SpriteSheetBundle {
                 transform: Transform {
@@ -218,11 +227,26 @@ fn setup(
                     scale: Vec3::splat(4.0),
                     ..Default::default()
                 },
-                sprite: TextureAtlasSprite::new(vendor_index as u32),
+                sprite: TextureAtlasSprite::new(actor_vendor_index as u32),
                 texture_atlas: atlas_handle.clone(),
                 ..Default::default()
             })
             .with(Actor {})
             .with(Collider { radius: 8.0 });
+    }
+
+    for i in 0..6 {
+        commands
+            .spawn(SpriteSheetBundle {
+                transform: Transform {
+                    translation: Vec3::new(0.0, -200.0 + 128.0 * i as f32, 0.0),
+                    scale: Vec3::splat(4.0),
+                    ..Default::default()
+                },
+                sprite: TextureAtlasSprite::new(wall_vendor_index as u32),
+                texture_atlas: atlas_handle.clone(),
+                ..Default::default()
+            })
+            .with(Collider { radius: 64.0 });
     }
 }
