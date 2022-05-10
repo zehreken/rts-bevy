@@ -1,3 +1,5 @@
+mod camera_utils;
+mod mouse_input;
 mod movement;
 
 use bevy::{prelude::*, DefaultPlugins};
@@ -7,6 +9,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup)
         .add_system(bevy::input::system::exit_on_esc_system)
+        .add_plugin(mouse_input::MouseInputPlugin)
         .add_plugin(movement::MovementPlugin)
         .run();
 }
