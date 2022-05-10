@@ -7,15 +7,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'rts-ggez'",
+            "name": "Debug executable 'rts-bevy'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=rts-ggez",
-                    "--package=rts-ggez"
+                    "--bin=rts-bevy",
+                    "--package=rts-bevy"
                 ],
                 "filter": {
-                    "name": "rts-ggez",
+                    "name": "rts-bevy",
                     "kind": "bin"
                 }
             },
@@ -25,16 +25,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'rts-ggez'",
+            "name": "Debug unit tests in executable 'rts-bevy'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=rts-ggez",
-                    "--package=rts-ggez"
+                    "--bin=rts-bevy",
+                    "--package=rts-bevy"
                 ],
                 "filter": {
-                    "name": "rts-ggez",
+                    "name": "rts-bevy",
                     "kind": "bin"
                 }
             },
