@@ -18,6 +18,6 @@ pub fn screen_to_world_point(window: &Window, camera: &Transform, screen_point: 
     )
 }
 
-pub fn world_to_screen_point(window: &Window, camera: &Camera, world_point: &Vec3) -> Vec3 {
-    vec3(0.0, 0.0, 0.0)
-}
+// pub fn _world_to_screen_point(window: &Window, camera: &Camera, world_point: &Vec3) -> Vec3 {
+//     vec3(0.0, 0.0, 0.0)
+// }
