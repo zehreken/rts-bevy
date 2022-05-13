@@ -1,5 +1,6 @@
 mod camera_utils;
 mod collision;
+mod fight;
 mod mouse_input;
 mod movement;
 
@@ -56,7 +57,13 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             .insert(Actor {
                 actor_type: ActorType::Human,
             })
-            .insert(CircleCollider { radius: 4.0 });
+            .insert(CircleCollider { radius: 4.0 })
+            .insert(Attack {
+                damage: 3.0,
+                timer: 0.0,
+                rate: 0.5,
+            })
+            .insert(Life { hp: 100.0 });
     }
 
     // Walls
@@ -101,13 +108,31 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             .insert(Actor {
                 actor_type: ActorType::Orc,
             })
-            .insert(CircleCollider { radius: 4.0 });
+            .insert(CircleCollider { radius: 4.0 })
+            .insert(Attack {
+                damage: 5.0,
+                timer: 0.0,
+                rate: 0.3,
+            })
+            .insert(Life { hp: 100.0 });
     }
 }
 
 #[derive(Component)]
 pub struct Actor {
     pub actor_type: ActorType,
+}
+
+#[derive(Component)]
+pub struct Attack {
+    pub damage: f32,
+    pub timer: f32,
+    pub rate: f32, // when timer equals rate, the entity attacks
+}
+
+#[derive(Component)]
+pub struct Life {
+    pub hp: f32,
 }
 
 pub enum ActorType {

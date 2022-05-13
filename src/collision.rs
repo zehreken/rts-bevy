@@ -12,6 +12,11 @@ pub struct SeparationCommand {
     pub position: Vec3,
 }
 
+#[derive(Component)]
+pub struct Collision {
+    pub others: Vec<Entity>,
+}
+
 fn collision_system(mut commands: Commands, query: Query<(Entity, &Transform, &CircleCollider)>) {
     let mut to_process = vec![];
     for (entity, transform, collider) in query.iter() {
@@ -26,6 +31,7 @@ fn collision_system(mut commands: Commands, query: Query<(Entity, &Transform, &C
                 SeparationCommand {
                     position: Vec3::ZERO,
                 },
+                Collision { others: vec![] },
             ));
         }
 
@@ -38,6 +44,7 @@ fn collision_system(mut commands: Commands, query: Query<(Entity, &Transform, &C
                 let normalized = diff.normalize() * 3.0;
 
                 if distance < 2.0 * (collider_a.radius + collider_b.radius) {
+                    // TODO: Understand what this is for
                     let factor = 4.0 * (collider_a.radius + collider_b.radius) - distance;
                     result[i].1.position += normalized * factor;
                     result[j].1.position -= normalized * factor;
@@ -45,9 +52,8 @@ fn collision_system(mut commands: Commands, query: Query<(Entity, &Transform, &C
             }
         }
 
-        for r in result {
-            // This is how we add components, r.0 is the entity and r.1 is the component
-            commands.entity(r.0).insert(r.1);
+        for (entity, separation, collision) in result {
+            commands.entity(entity).insert(separation).insert(collision);
         }
     }
 }

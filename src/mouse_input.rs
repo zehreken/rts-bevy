@@ -1,5 +1,5 @@
-use super::movement::MoveCommand;
-use super::Actor;
+use crate::movement::MoveCommand;
+use crate::Actor;
 use bevy::{
     input::{mouse::*, ElementState},
     prelude::*,

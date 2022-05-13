@@ -1,4 +1,4 @@
-use super::AppState;
+use crate::AppState;
 use bevy::asset::LoadState;
 use bevy::prelude::*;
 
