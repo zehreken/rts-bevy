@@ -47,7 +47,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut bundle = OrthographicCameraBundle::new_2d();
     bundle.orthographic_projection.scale = 1.0;
     commands.spawn_bundle(bundle);
-    for i in 0..3000 {
+    for i in 0..1000 {
         commands
             .spawn_bundle(SpriteBundle {
                 texture: asset_server.load("tiles/colored/tile_0004.png"),
@@ -98,7 +98,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     }
     // =====
 
-    for i in 0..3000 {
+    for i in 0..1000 {
         commands
             .spawn_bundle(SpriteBundle {
                 texture: asset_server.load("tiles/colored/tile_0011.png"),
