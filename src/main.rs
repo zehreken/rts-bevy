@@ -43,15 +43,16 @@ fn ui_example(mut egui_context: ResMut<EguiContext>) {
     });
 }
 
+const CO: i32 = 1000;
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut bundle = OrthographicCameraBundle::new_2d();
     bundle.orthographic_projection.scale = 1.0;
     commands.spawn_bundle(bundle);
-    for i in 0..1000 {
+    for i in 0..CO {
         commands
             .spawn_bundle(SpriteBundle {
                 texture: asset_server.load("tiles/colored/tile_0004.png"),
-                transform: Transform::from_xyz(-500.0 - i as f32 * 0.2, 0.0, 0.0),
+                transform: Transform::from_xyz(-400.0 - i as f32 * 0.2, 0.0, 0.0),
                 ..default()
             })
             .insert(Actor {
@@ -98,11 +99,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     }
     // =====
 
-    for i in 0..1000 {
+    for i in 0..CO {
         commands
             .spawn_bundle(SpriteBundle {
                 texture: asset_server.load("tiles/colored/tile_0011.png"),
-                transform: Transform::from_xyz(500.0 + i as f32 * 0.2, 0.0, 0.0),
+                transform: Transform::from_xyz(400.0 + i as f32 * 0.2, 0.0, 0.0),
                 ..default()
             })
             .insert(Actor {

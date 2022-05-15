@@ -17,7 +17,7 @@ fn movement_system(
     mut query: Query<(
         Option<&Actor>,
         &MoveCommand,
-        &SeparationCommand,
+        Option<&mut SeparationCommand>,
         &mut Transform,
     )>,
 ) {
@@ -27,7 +27,11 @@ fn movement_system(
     let (_, camera_transform, _) = camera_query.single_mut();
     for (actor, move_command, separation_command, mut transform) in query.iter_mut() {
         if let Some(_) = actor {
-            let target = move_command.position + separation_command.position;
+            let mut target = move_command.position;
+            if let Some(mut separation_command) = separation_command {
+                target += separation_command.direction;
+                separation_command.direction = Vec3::ZERO;
+            }
             let world_point = camera_utils::screen_to_world_point(
                 windows.get_primary().unwrap(),
                 camera_transform,
