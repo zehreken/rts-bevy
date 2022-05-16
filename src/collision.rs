@@ -1,6 +1,6 @@
 use bevy::{prelude::*, utils::HashMap};
 
-use crate::{Attack, Life};
+use crate::{Actor, ActorType, Attack, Life};
 
 pub struct CollisionPlugin;
 
@@ -25,6 +25,7 @@ fn collision_system_2(
         Entity,
         &Transform,
         &CircleCollider,
+        Option<&Actor>,
         Option<&mut Attack>,
         Option<&mut Life>,
     )>,
@@ -58,6 +59,32 @@ fn collision_system_2(
                     },
                 );
             }
+
+            // Fight
+            if let (
+                Some(actor_a),
+                Some(mut attack_a),
+                Some(mut life_a),
+                Some(actor_b),
+                Some(mut attack_b),
+                Some(mut life_b),
+            ) = (obj_a.3, obj_a.4, obj_a.5, obj_b.3, obj_b.4, obj_b.5)
+            {
+                match (&actor_a.actor_type, &actor_b.actor_type) {
+                    (ActorType::Human, ActorType::Orc) | (ActorType::Orc, ActorType::Human) => {
+                        if attack_a.timer >= attack_a.rate {
+                            life_b.hp -= attack_a.damage;
+                            attack_a.timer -= attack_a.rate;
+                        }
+                        if attack_b.timer >= attack_b.rate {
+                            life_a.hp -= attack_b.damage;
+                            attack_b.timer -= attack_b.rate;
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            // =====
         }
     }
 

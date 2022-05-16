@@ -12,7 +12,6 @@ fn mouse_input_system(
     mut commands: Commands,
     mut mouse_button_input_events: EventReader<MouseButtonInput>,
     mut cursor_moved_events: EventReader<CursorMoved>,
-    mut query: Query<(Entity, &Actor)>,
 ) {
     for (button_event, move_event) in mouse_button_input_events
         .iter()
@@ -21,11 +20,9 @@ fn mouse_input_system(
         match (button_event.button, button_event.state) {
             (MouseButton::Left, ElementState::Pressed) => {}
             (MouseButton::Left, ElementState::Released) => {
-                for (entity, _) in query.iter_mut() {
-                    commands.entity(entity).insert(MoveCommand {
-                        position: Vec3::new(move_event.position.x, move_event.position.y, 0.0),
-                    });
-                }
+                commands.spawn().insert(MoveCommand {
+                    position: Vec3::new(move_event.position.x, move_event.position.y, 0.0),
+                });
             }
             (MouseButton::Right, ElementState::Pressed) => {}
             (MouseButton::Right, ElementState::Released) => {}

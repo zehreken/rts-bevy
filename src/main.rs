@@ -25,6 +25,7 @@ fn main() {
         // .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_startup_system(setup)
         .add_system(bevy::input::system::exit_on_esc_system)
+        .add_plugin(fight::FightPlugin)
         .add_plugin(mouse_input::MouseInputPlugin)
         .add_plugin(collision::CollisionPlugin)
         .add_plugin(movement::MovementPlugin)
@@ -43,7 +44,7 @@ fn ui_example(mut egui_context: ResMut<EguiContext>) {
     });
 }
 
-const CO: i32 = 1000;
+const CO: i32 = 500;
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut bundle = OrthographicCameraBundle::new_2d();
     bundle.orthographic_projection.scale = 1.0;
@@ -60,11 +61,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             })
             .insert(CircleCollider { radius: 4.0 })
             .insert(Attack {
-                damage: 3.0,
+                damage: 0.7,
                 timer: 0.0,
-                rate: 0.5,
+                rate: 0.7,
             })
-            .insert(Life { hp: 100.0 });
+            .insert(Life { hp: 10.0 });
     }
 
     // Walls
@@ -111,11 +112,11 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             })
             .insert(CircleCollider { radius: 4.0 })
             .insert(Attack {
-                damage: 5.0,
+                damage: 1.4,
                 timer: 0.0,
-                rate: 0.3,
+                rate: 1.4,
             })
-            .insert(Life { hp: 100.0 });
+            .insert(Life { hp: 10.0 });
     }
 }
 

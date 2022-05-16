@@ -1,23 +1,22 @@
 use bevy::{
     core::Time,
-    prelude::{Commands, Plugin, Query, Res},
+    prelude::{Commands, Entity, Plugin, Query, Res},
 };
 
-use crate::{Actor, Attack, Life};
+use crate::{Attack, Life};
 
 pub struct FightPlugin;
 
 fn fight_system(
-    time: Res<Time>,
     mut commands: Commands,
-    mut query: Query<(&Actor, &mut Attack, &Life)>,
+    time: Res<Time>,
+    mut query: Query<(Entity, &mut Attack, &Life)>,
 ) {
     let delta_seconds = time.delta_seconds();
-    for (actor, mut attack, life) in query.iter_mut() {
+    for (entity, mut attack, life) in query.iter_mut() {
         attack.timer += delta_seconds;
-        if attack.timer >= attack.rate {
-            attack.timer -= attack.rate;
-            // attack
+        if life.hp <= 0.0 {
+            commands.entity(entity).despawn();
         }
     }
 }
